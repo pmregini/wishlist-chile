@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🇨🇱 Wishlist Maker</title>
+    <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: #18181b;
+            --surface-card: #27272a;
+            --border: #3f3f46;
+            --text: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --primary: #2563eb;
+            --primary-hover: #3b82f6;
+            --danger: #ef4444;
+            --safe: #22c55e;
+            --accent: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 2rem) 1rem;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; }
+
+        header { padding: 0.5rem 0 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: flex-start; }
+        h1 { font-size: 1.6rem; font-weight: 800; }
+        .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+        /* Panel de Control de Tasas de Cambio */
+        .rates-panel {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.2rem;
+        }
+        .rates-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
+        .btn-refresh { background: var(--surface-card); border: 1px solid var(--border); color: var(--text); font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.6rem; border-radius: 8px; cursor: pointer; text-transform: none; -webkit-tap-highlight-color: transparent; }
+        .btn-refresh:active { transform: scale(0.96); }
+        .rates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .rate-box { background: var(--bg); border: 1px solid var(--border); padding: 0.5rem; border-radius: 10px; display: flex; flex-direction: column; gap: 0.25rem; }
+        .rate-box label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .rate-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
+        .rate-box span { font-weight: 700; font-size: 0.9rem; color: var(--accent); }
+        .rate-box input { background: transparent; border: none; color: var(--text); font-weight: 700; width: 100%; font-size: 1rem; outline: none; }
+        .rates-updated { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.6rem; text-align: right; }
+
+        /* Formulario Input */
+        .form-card { background: var(--surface); padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.8rem; }
+        .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .form-group input, .form-group select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            -webkit-appearance: none;
+            outline: none;
+        }
+        .form-group select {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a1a1aa'><path d='M4 6l4 4 4-4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .row-inputs { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0.75rem; }
+
+        .link-row { display: flex; gap: 0.5rem; }
+        .link-row input { flex: 1; }
+        .btn-fetch { background: var(--surface-card); border: 1px solid var(--border); color: var(--text); font-weight: 700; padding: 0 1rem; border-radius: 12px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+        .btn-fetch:active { transform: scale(0.97); }
+        .btn-fetch.loading { opacity: 0.6; }
+        .fetch-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -0.4rem; }
+        .fetch-hint.error { color: var(--danger); }
+        .fetch-hint.success { color: var(--safe); }
+
+        .btn-add { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1rem; margin-top: 0.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; -webkit-tap-highlight-color: transparent; }
+        .btn-add:active { background: var(--primary-hover); transform: scale(0.98); }
+
+        /* Filtros por Categoría en Lista */
+        .category-badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: var(--surface-card); color: var(--text); }
+        .badge-ropa { background: #3b82f6; color: white; }
+        .badge-carteras { background: #ec4899; color: white; }
+        .badge-accesorios { background: #14b8a6; color: white; }
+        .badge-zapatillas { background: #f59e0b; color: white; }
+        .badge-electrónica { background: #8b5cf6; color: white; }
+
+        /* Lista de Tarjetas */
+        .grid { display: flex; flex-direction: column; gap: 1rem; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.8rem; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+        .card-title { font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
+        .shop-info { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+        /* Bloque de Conversión Multimoneda */
+        .prices-block { background: var(--bg); padding: 0.8rem; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.4rem; }
+        .price-row-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 0.4rem; }
+        .price-row-main .origin-val { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+        .price-row-main .converted-usd { font-size: 1.2rem; font-weight: 800; color: var(--safe); }
+        .price-row-sub { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .blue-indicator { color: var(--accent); }
+
+        .actions { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
+        .btn-view { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text); text-align: center; padding: 0.75rem; border-radius: 12px; text-decoration: none; font-size: 0.9rem; font-weight: 600; display: flex; justify-content: center; align-items: center; }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); padding: 0.75rem 1.2rem; border-radius: 12px; cursor: pointer; }
+
+        .empty-state { text-align: center; color: var(--text-muted); padding: 3rem 1rem; font-size: 0.95rem; }
+
+        /* Filtros */
+        .filters-bar { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
+        .filters-bar select { flex: 1; }
+        .filter-count { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.8rem; text-align: right; }
+        .btn-clear-filters { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem; font-weight: 700; padding: 0 0.8rem; border-radius: 12px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🇨🇱 Wishlist Maker</h1>
+                <div class="subtitle">Multi-Divisas & Dólar Blue Engine</div>
+            </div>
+        </header>
+
+        <div class="rates-panel">
+            <div class="rates-title">
+                <span>Conversión de Divisas (1 USD Equivale a)</span>
+                <button class="btn-refresh" id="btnRefreshRates" onclick="fetchLiveRates()">🔄 Actualizar</button>
+            </div>
+            <div class="rates-grid">
+                <div class="rate-box">
+                    <label>Chilenos (CLP)</label>
+                    <div class="input-group"><span>$</span><input type="number" id="rateClp" value="950" oninput="updateRate('clp', this.value)"></div>
+                </div>
+                <div class="rate-box">
+                    <label>Dólar Blue (ARS)</label>
+                    <div class="input-group"><span>$</span><input type="number" id="rateArs" value="1250" oninput="updateRate('ars', this.value)"></div>
+                </div>
+                <div class="rate-box" style="grid-column: span 2;">
+                    <label>Real Brasileño (BRL)</label>
+                    <div class="input-group"><span>R$</span><input type="number" id="rateBrl" value="5.60" step="0.1" oninput="updateRate('brl', this.value)"></div>
+                </div>
+            </div>
+            <div class="rates-updated" id="ratesUpdated">Tasas manuales — tocá Actualizar para traer valores en vivo</div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label>Link Web (Opcional, pero habilita auto-carga)</label>
+                <div class="link-row">
+                    <input type="url" id="link" placeholder="https://...">
+                    <button class="btn-fetch" id="btnFetch" onclick="fetchProductInfo()">✨ Traer datos</button>
+                </div>
+                <div class="fetch-hint" id="fetchHint">Pegá el link y probamos traer título y precio automáticamente. No siempre funciona (depende de cada tienda) — revisá y corregí antes de guardar.</div>
+
+                <label>Producto</label>
+                <input type="text" id="title" placeholder="Ej: Zapatillas Adidas Samba, Cartera...">
+
+                <div class="row-inputs">
+                    <div>
+                        <label>Precio Original</label>
+                        <input type="number" id="price" placeholder="Monto limpio sin puntos" pattern="[0-9]*">
+                    </div>
+                    <div>
+                        <label>Moneda</label>
+                        <select id="currency">
+                            <option value="CLP">CLP ($)</option>
+                            <option value="USD">USD (U$S)</option>
+                            <option value="ARS">ARS ($ Blue)</option>
+                            <option value="BRL">BRL (R$)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-inputs" style="grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <label>Categoría</label>
+                        <select id="category">
+                            <option value="ropa">Ropa</option>
+                            <option value="carteras">Carteras</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="zapatillas">Zapatillas</option>
+                            <option value="electrónica">Electrónica</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Tienda</label>
+                        <input type="text" id="shop" placeholder="Ej: H&M, Zara...">
+                    </div>
+                </div>
+
+                <button class="btn-add" onclick="addItem()">✨ Agregar a Wishlist</button>
+            </div>
+        </div>
+
+        <div class="filters-bar">
+            <select id="filterCategory" onchange="render()">
+                <option value="">Todas las categorías</option>
+                <option value="ropa">Ropa</option>
+                <option value="carteras">Carteras</option>
+                <option value="accesorios">Accesorios</option>
+                <option value="zapatillas">Zapatillas</option>
+                <option value="electrónica">Electrónica</option>
+            </select>
+            <select id="filterShop" onchange="render()">
+                <option value="">Todas las tiendas</option>
+            </select>
+            <button class="btn-clear-filters" onclick="clearFilters()">✕</button>
+        </div>
+        <div class="filter-count" id="filterCount"></div>
+
+        <div class="grid" id="inventoryGrid"></div>
+    </div>
+
+    <script>
+        let state = JSON.parse(localStorage.getItem('wishlist_chile_pro_v4')) || {
+            rates: { clp: 950, ars: 1250, brl: 5.60 },
+            ratesUpdatedAt: null,
+            items: []
+        };
+
+        function save() {
+            localStorage.setItem('wishlist_chile_pro_v4', JSON.stringify(state));
+        }
+
+        function updateRate(key, val) {
+            const parsed = parseFloat(val);
+            if(parsed > 0) {
+                state.rates[key] = parsed;
+                state.ratesUpdatedAt = null; // ya no son "en vivo", el usuario las pisó
+                save();
+                renderRatesStatus();
+            }
+        }
+
+        function renderRatesStatus() {
+            const el = document.getElementById('ratesUpdated');
+            if(state.ratesUpdatedAt) {
+                const d = new Date(state.ratesUpdatedAt);
+                el.textContent = `Actualizado en vivo: ${d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
+            } else {
+                el.textContent = 'Tasas manuales — tocá Actualizar para traer valores en vivo';
+            }
+        }
+
+        async function fetchLiveRates() {
+            const btn = document.getElementById('btnRefreshRates');
+            btn.disabled = true;
+            btn.textContent = '⏳ ...';
+            try {
+                // CLP y BRL vs USD (open.er-api.com: gratis, sin key, CORS habilitado)
+                const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                const fxData = await fxRes.json();
+                if(fxData && fxData.rates) {
+                    if(fxData.rates.CLP) state.rates.clp = Math.round(fxData.rates.CLP);
+                    if(fxData.rates.BRL) state.rates.brl = Math.round(fxData.rates.BRL * 100) / 100;
+                }
+
+                // Dólar blue ARS (dolarapi.com: gratis, sin key)
+                const blueRes = await fetch('https://dolarapi.com/v1/dolares/blue');
+                const blueData = await blueRes.json();
+                if(blueData && blueData.venta) {
+                    state.rates.ars = blueData.venta;
+                }
+
+                state.ratesUpdatedAt = new Date().toISOString();
+                save();
+                render();
+                btn.textContent = '🔄 Actualizar';
+            } catch(err) {
+                console.error(err);
+                btn.textContent = '⚠️ Error, reintentar';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Heurística de extracción: busca precio y título en texto plano de la página
+        function extractTitle(text, fallbackUrl) {
+            // Busca líneas tipo "Title: ..." (r.jina.ai las suele incluir) o primer heading markdown
+            const titleLineMatch = text.match(/^Title:\s*(.+)$/mi);
+            if(titleLineMatch) return titleLineMatch[1].trim().slice(0, 120);
+            const headingMatch = text.match(/^#\s+(.+)$/m);
+            if(headingMatch) return headingMatch[1].trim().slice(0, 120);
+            try { return new URL(fallbackUrl).hostname.replace('www.', ''); } catch(e) { return ''; }
+        }
+
+        function extractPrice(text) {
+            // Busca patrones de precio: $ 19.990, CLP 19990, R$ 199,90, USD 199.99, etc.
+            const patterns = [
+                /(?:CLP|\$)\s?([\d]{1,3}(?:[.,]\d{3})+)(?!\d)/,
+                /(?:R\$)\s?([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/,
+                /(?:USD|U\$S|US\$)\s?([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/,
+                /\$\s?([\d]{1,3}(?:[.,]\d{2,3})*)/
+            ];
+            for(const p of patterns) {
+                const m = text.match(p);
+                if(m) {
+                    let raw = m[1].replace(/\./g, '').replace(',', '.');
+                    const val = parseFloat(raw);
+                    if(!isNaN(val) && val > 0) return val;
+                }
+            }
+            return null;
+        }
+
+        function detectCurrency(text, url) {
+            if(url.includes('.cl') || /\bCLP\b/i.test(text)) return 'CLP';
+            if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
+            if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
+            if(/\bUSD\b|U\$S/i.test(text)) return 'USD';
+            return 'CLP'; // default dado que el viaje es a Chile
+        }
+
+        async function fetchProductInfo() {
+            const url = document.getElementById('link').value.trim();
+            const hint = document.getElementById('fetchHint');
+            const btn = document.getElementById('btnFetch');
+            if(!url) {
+                hint.textContent = 'Pegá primero un link.';
+                hint.className = 'fetch-hint error';
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.textContent = '⏳...';
+            hint.textContent = 'Buscando datos en la página...';
+            hint.className = 'fetch-hint';
+
+            try {
+                // Proxy de lectura sin CORS ni backend propio. Devuelve la página como texto legible.
+                const proxyUrl = 'https://r.jina.ai/' + url;
+                const res = await fetch(proxyUrl);
+                if(!res.ok) throw new Error('proxy_failed');
+                const text = await res.text();
+
+                const title = extractTitle(text, url);
+                const price = extractPrice(text);
+                const currency = detectCurrency(text, url);
+
+                if(title) document.getElementById('title').value = title;
+                if(price) document.getElementById('price').value = price;
+                document.getElementById('currency').value = currency;
+
+                try {
+                    const hostname = new URL(url).hostname.replace('www.', '').split('.')[0];
+                    if(!document.getElementById('shop').value) {
+                        document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
+                    }
+                } catch(e) {}
+
+                if(price) {
+                    hint.textContent = '✅ Traído automáticamente. Revisá que esté bien antes de guardar.';
+                    hint.className = 'fetch-hint success';
+                } else {
+                    hint.textContent = '⚠️ Encontré la página pero no pude detectar el precio con certeza. Completalo a mano.';
+                    hint.className = 'fetch-hint error';
+                }
+            } catch(err) {
+                console.error(err);
+                hint.textContent = '⚠️ No se pudo leer esta tienda automáticamente (bloquea el acceso). Cargá los datos a mano.';
+                hint.className = 'fetch-hint error';
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = '✨ Traer datos';
+            }
+        }
+
+        function addItem() {
+            const title = document.getElementById('title').value.trim();
+            const price = parseFloat(document.getElementById('price').value);
+            const currency = document.getElementById('currency').value;
+            const category = document.getElementById('category').value;
+            const shop = document.getElementById('shop').value.trim() || 'Tienda';
+            const link = document.getElementById('link').value.trim();
+
+            if(!title || isNaN(price)) {
+                alert('Falta completar datos básicos del producto.');
+                return;
+            }
+
+            state.items.unshift({ title, price, currency, category, shop, link });
+            save();
+            render();
+
+            document.getElementById('title').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('shop').value = '';
+            document.getElementById('link').value = '';
+            document.getElementById('fetchHint').textContent = 'Pegá el link y probamos traer título y precio automáticamente. No siempre funciona (depende de cada tienda) — revisá y corregí antes de guardar.';
+            document.getElementById('fetchHint').className = 'fetch-hint';
+            document.activeElement.blur();
+        }
+
+        function deleteItem(index) {
+            if(confirm('¿Borrar?')) {
+                state.items.splice(index, 1);
+                save();
+                render();
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterShop').value = '';
+            render();
+        }
+
+        function populateShopFilter() {
+            const select = document.getElementById('filterShop');
+            const currentVal = select.value;
+            const shops = [...new Set(state.items.map(i => i.shop))].sort((a, b) => a.localeCompare(b));
+
+            select.innerHTML = '<option value="">Todas las tiendas</option>' +
+                shops.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            if(shops.includes(currentVal)) select.value = currentVal;
+        }
+
+        function render() {
+            document.getElementById('rateClp').value = state.rates.clp;
+            document.getElementById('rateArs').value = state.rates.ars;
+            document.getElementById('rateBrl').value = state.rates.brl;
+            renderRatesStatus();
+
+            populateShopFilter();
+
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const shopFilter = document.getElementById('filterShop').value;
+
+            const filteredItems = state.items.filter(item => {
+                if(categoryFilter && item.category !== categoryFilter) return false;
+                if(shopFilter && item.shop !== shopFilter) return false;
+                return true;
+            });
+
+            document.getElementById('filterCount').textContent =
+                (categoryFilter || shopFilter)
+                    ? `Mostrando ${filteredItems.length} de ${state.items.length} artículos`
+                    : '';
+
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+
+            if(state.items.length === 0) {
+                grid.innerHTML = `<div class="empty-state">Historial limpio. Empezá a agregar artículos.</div>`;
+                return;
+            }
+
+            if(filteredItems.length === 0) {
+                grid.innerHTML = `<div class="empty-state">Ningún artículo coincide con este filtro.</div>`;
+                return;
+            }
+
+            filteredItems.forEach((item) => {
+                const index = state.items.indexOf(item);
+                let usdValue = 0;
+                if(item.currency === 'USD') usdValue = item.price;
+                else if(item.currency === 'CLP') usdValue = item.price / state.rates.clp;
+                else if(item.currency === 'ARS') usdValue = item.price / state.rates.ars;
+                else if(item.currency === 'BRL') usdValue = item.price / state.rates.brl;
+
+                const equivalentArs = (usdValue * state.rates.ars).toLocaleString('es-AR', { maximumFractionDigits: 0 });
+                const equivalentClp = (usdValue * state.rates.clp).toLocaleString('es-CL', { maximumFractionDigits: 0 });
+                const equivalentUsd = usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                let originalPriceFormatted = '';
+                if(item.currency === 'CLP') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-CL')} CLP`;
+                if(item.currency === 'ARS') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-AR')} ARS`;
+                if(item.currency === 'BRL') originalPriceFormatted = `R$ ${Number(item.price).toLocaleString('pt-BR')}`;
+                if(item.currency === 'USD') originalPriceFormatted = `U$S ${Number(item.price)}`;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${item.title}</div>
+                            <div class="shop-info">📍 ${item.shop}</div>
+                        </div>
+                        <span class="category-badge badge-${item.category}">${item.category}</span>
+                    </div>
+
+                    <div class="prices-block">
+                        <div class="price-row-main">
+                            <span class="origin-val">${originalPriceFormatted}</span>
+                            <span class="converted-usd">U$S ${equivalentUsd}</span>
+                        </div>
+                        <div class="price-row-sub">
+                            <span>Equiv. Chile: $${equivalentClp} CLP</span>
+                            <span class="blue-indicator">ARS Blue: $${equivalentArs}</span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        ${item.link ? `<a href="${item.link}" target="_blank" class="btn-view">Ver Link ↗</a>` : ''}
+                        <button class="btn-delete" onclick="deleteItem(${index})">🗑️</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.onload = function() {
+            render();
+            fetchLiveRates();
+        };
+    </script>
+</body>
+</html>
