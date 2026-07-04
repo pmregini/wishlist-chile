@@ -21,40 +21,71 @@
             --safe: #22c55e;
             --accent: #f59e0b;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body {
             background: var(--bg);
             color: var(--text);
-            padding: calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 2rem) 1rem;
+            padding: calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 5.5rem) 1rem;
         }
 
         .container { max-width: 500px; margin: 0 auto; }
 
-        header { padding: 0.5rem 0 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: flex-start; }
-        h1 { font-size: 1.6rem; font-weight: 800; }
-        .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem; }
+        header { padding: 0.5rem 0 1rem 0; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-start; }
+        h1 { font-size: 1.5rem; font-weight: 800; }
+        .subtitle { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.15rem; }
 
-        /* Panel de Control de Tasas de Cambio */
-        .rates-panel {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 1.2rem;
-        }
-        .rates-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
-        .btn-refresh { background: var(--surface-card); border: 1px solid var(--border); color: var(--text); font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.6rem; border-radius: 8px; cursor: pointer; text-transform: none; -webkit-tap-highlight-color: transparent; }
+        /* Resumen */
+        .summary-bar { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 0.7rem 1rem; margin-bottom: 0.8rem; font-size: 0.85rem; }
+        .summary-bar .count { color: var(--text-muted); font-weight: 600; }
+        .summary-bar .total { font-weight: 800; color: var(--safe); }
+
+        /* Conversor de monedas */
+        .converter-card { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 0.8rem; padding: 0.9rem 1rem; }
+        .converter-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.7rem; }
+        .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .converter-box { background: var(--bg); border: 1px solid var(--border); padding: 0.55rem 0.6rem; border-radius: 10px; display: flex; flex-direction: column; gap: 0.2rem; }
+        .converter-box label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+        .converter-box .input-group { display: flex; align-items: center; gap: 0.3rem; }
+        .converter-box span { font-weight: 700; font-size: 0.9rem; color: var(--accent); }
+        .converter-box input { background: transparent; border: none; color: var(--text); font-weight: 700; width: 100%; font-size: 1rem; outline: none; }
+        .converter-box input::placeholder { color: var(--text-muted); font-weight: 500; opacity: 0.7; }
+        .converter-box.active { border-color: var(--primary); }
+        .converter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.7rem; font-size: 0.7rem; color: var(--text-muted); }
+        .btn-refresh { background: var(--surface-card); border: 1px solid var(--border); color: var(--text); font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.55rem; border-radius: 8px; cursor: pointer; }
         .btn-refresh:active { transform: scale(0.96); }
-        .rates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        .rate-box { background: var(--bg); border: 1px solid var(--border); padding: 0.5rem; border-radius: 10px; display: flex; flex-direction: column; gap: 0.25rem; }
-        .rate-box label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
-        .rate-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
-        .rate-box span { font-weight: 700; font-size: 0.9rem; color: var(--accent); }
-        .rate-box input { background: transparent; border: none; color: var(--text); font-weight: 700; width: 100%; font-size: 1rem; outline: none; }
-        .rates-updated { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.6rem; text-align: right; }
 
-        /* Formulario Input */
-        .form-card { background: var(--surface); padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+        /* Barra de búsqueda + filtros */
+        .search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.9rem; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+        .search-bar input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 0.95rem; outline: none; }
+        .search-bar .icon { color: var(--text-muted); font-size: 0.9rem; }
+
+        .filters-row { display: flex; gap: 0.5rem; margin-bottom: 0.4rem; overflow-x: auto; padding-bottom: 0.2rem; }
+        .filters-row select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.55rem 0.7rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            -webkit-appearance: none;
+            outline: none;
+            flex-shrink: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23a1a1aa'><path d='M4 6l4 4 4-4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 1.6rem;
+        }
+        .btn-clear-filters { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.78rem; font-weight: 700; padding: 0.55rem 0.7rem; border-radius: 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .filter-count { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.8rem; text-align: right; min-height: 0.9rem; }
+
+        /* Formulario — colapsable */
+        .form-card { background: var(--surface); border-radius: 18px; border: 1px solid var(--border); margin-bottom: 1.2rem; overflow: hidden; }
+        .form-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.2rem; cursor: pointer; }
+        .form-toggle-row .label { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+        .form-body { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+        .form-card.open .form-body { max-height: 900px; }
+        .form-card.open .chevron { transform: rotate(180deg); }
+        .form-body-inner { padding: 0 1.2rem 1.2rem 1.2rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.8rem; }
         .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
         .form-group input, .form-group select {
@@ -77,51 +108,49 @@
 
         .link-row { display: flex; gap: 0.5rem; }
         .link-row input { flex: 1; }
-        .btn-fetch { background: var(--surface-card); border: 1px solid var(--border); color: var(--text); font-weight: 700; padding: 0 1rem; border-radius: 12px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+        .btn-fetch { background: var(--surface-card); border: 1px solid var(--border); color: var(--text); font-weight: 700; padding: 0 1rem; border-radius: 12px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
         .btn-fetch:active { transform: scale(0.97); }
         .btn-fetch.loading { opacity: 0.6; }
         .fetch-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -0.4rem; }
         .fetch-hint.error { color: var(--danger); }
         .fetch-hint.success { color: var(--safe); }
 
-        .btn-add { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1rem; margin-top: 0.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; -webkit-tap-highlight-color: transparent; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1rem; margin-top: 0.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
         .btn-add:active { background: var(--primary-hover); transform: scale(0.98); }
 
-        /* Filtros por Categoría en Lista */
-        .category-badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: var(--surface-card); color: var(--text); }
+        /* FAB para agregar cuando el form está cerrado */
+        .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1.2rem); right: 1.2rem; background: var(--primary); color: white; border: none; width: 56px; height: 56px; border-radius: 50%; font-size: 1.6rem; box-shadow: 0 4px 16px rgba(37,99,235,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; transition: transform 0.15s ease; }
+        .fab:active { transform: scale(0.92); }
+        .fab.hidden { display: none; }
+
+        /* Categorías */
+        .category-badge { display: inline-block; padding: 0.22rem 0.55rem; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: var(--surface-card); color: var(--text); }
         .badge-ropa { background: #3b82f6; color: white; }
         .badge-carteras { background: #ec4899; color: white; }
         .badge-accesorios { background: #14b8a6; color: white; }
         .badge-zapatillas { background: #f59e0b; color: white; }
         .badge-electrónica { background: #8b5cf6; color: white; }
 
-        /* Lista de Tarjetas */
-        .grid { display: flex; flex-direction: column; gap: 1rem; }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.8rem; }
+        /* Lista de Tarjetas — más compactas */
+        .grid { display: flex; flex-direction: column; gap: 0.7rem; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
-        .card-title { font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
-        .shop-info { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+        .card-title { font-size: 1.02rem; font-weight: 700; line-height: 1.25; }
+        .shop-info { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; }
 
-        /* Bloque de Conversión Multimoneda */
-        .prices-block { background: var(--bg); padding: 0.8rem; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.4rem; }
-        .price-row-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 0.4rem; }
-        .price-row-main .origin-val { font-size: 1.3rem; font-weight: 800; color: var(--text); }
-        .price-row-main .converted-usd { font-size: 1.2rem; font-weight: 800; color: var(--safe); }
-        .price-row-sub { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .prices-block { background: var(--bg); padding: 0.65rem 0.75rem; border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.3rem; }
+        .price-row-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 0.3rem; }
+        .price-row-main .origin-val { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+        .price-row-main .converted-usd { font-size: 1.05rem; font-weight: 800; color: var(--safe); }
+        .price-row-sub { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
         .blue-indicator { color: var(--accent); }
 
-        .actions { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
-        .btn-view { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text); text-align: center; padding: 0.75rem; border-radius: 12px; text-decoration: none; font-size: 0.9rem; font-weight: 600; display: flex; justify-content: center; align-items: center; }
-        .btn-delete { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); padding: 0.75rem 1.2rem; border-radius: 12px; cursor: pointer; }
+        .actions { display: flex; gap: 0.5rem; }
+        .btn-view { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text); text-align: center; padding: 0.6rem; border-radius: 10px; text-decoration: none; font-size: 0.85rem; font-weight: 600; display: flex; justify-content: center; align-items: center; }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger); padding: 0.6rem 1rem; border-radius: 10px; cursor: pointer; }
 
         .empty-state { text-align: center; color: var(--text-muted); padding: 3rem 1rem; font-size: 0.95rem; }
-
-        /* Filtros */
-        .filters-bar { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
-        .filters-bar select { flex: 1; }
-        .filter-count { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.8rem; text-align: right; }
-        .btn-clear-filters { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem; font-weight: 700; padding: 0 0.8rem; border-radius: 12px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body>
@@ -133,78 +162,40 @@
             </div>
         </header>
 
-        <div class="rates-panel">
-            <div class="rates-title">
-                <span>Conversión de Divisas (1 USD Equivale a)</span>
-                <button class="btn-refresh" id="btnRefreshRates" onclick="fetchLiveRates()">🔄 Actualizar</button>
+        <div class="summary-bar" id="summaryBar"></div>
+
+        <div class="converter-card">
+            <div class="converter-title">Conversor rápido — ingresá en cualquier moneda</div>
+            <div class="converter-grid">
+                <div class="converter-box" id="boxClp">
+                    <label>CLP</label>
+                    <div class="input-group"><span>$</span><input type="number" id="convClp" placeholder="Ingresar" oninput="convertFrom('clp', this.value)"></div>
+                </div>
+                <div class="converter-box" id="boxArs">
+                    <label>ARS (Blue)</label>
+                    <div class="input-group"><span>$</span><input type="number" id="convArs" placeholder="Ingresar" oninput="convertFrom('ars', this.value)"></div>
+                </div>
+                <div class="converter-box" id="boxBrl">
+                    <label>BRL</label>
+                    <div class="input-group"><span>R$</span><input type="number" id="convBrl" placeholder="Ingresar" oninput="convertFrom('brl', this.value)"></div>
+                </div>
+                <div class="converter-box" id="boxUsd">
+                    <label>USD</label>
+                    <div class="input-group"><span>U$S</span><input type="number" id="convUsd" placeholder="Ingresar" oninput="convertFrom('usd', this.value)"></div>
+                </div>
             </div>
-            <div class="rates-grid">
-                <div class="rate-box">
-                    <label>Chilenos (CLP)</label>
-                    <div class="input-group"><span>$</span><input type="number" id="rateClp" value="950" oninput="updateRate('clp', this.value)"></div>
-                </div>
-                <div class="rate-box">
-                    <label>Dólar Blue (ARS)</label>
-                    <div class="input-group"><span>$</span><input type="number" id="rateArs" value="1250" oninput="updateRate('ars', this.value)"></div>
-                </div>
-                <div class="rate-box" style="grid-column: span 2;">
-                    <label>Real Brasileño (BRL)</label>
-                    <div class="input-group"><span>R$</span><input type="number" id="rateBrl" value="5.60" step="0.1" oninput="updateRate('brl', this.value)"></div>
-                </div>
-            </div>
-            <div class="rates-updated" id="ratesUpdated">Tasas manuales — tocá Actualizar para traer valores en vivo</div>
-        </div>
-
-        <div class="form-card">
-            <div class="form-group">
-                <label>Link Web (Opcional, pero habilita auto-carga)</label>
-                <div class="link-row">
-                    <input type="url" id="link" placeholder="https://...">
-                    <button class="btn-fetch" id="btnFetch" onclick="fetchProductInfo()">✨ Traer datos</button>
-                </div>
-                <div class="fetch-hint" id="fetchHint">Pegá el link y probamos traer título y precio automáticamente. No siempre funciona (depende de cada tienda) — revisá y corregí antes de guardar.</div>
-
-                <label>Producto</label>
-                <input type="text" id="title" placeholder="Ej: Zapatillas Adidas Samba, Cartera...">
-
-                <div class="row-inputs">
-                    <div>
-                        <label>Precio Original</label>
-                        <input type="number" id="price" placeholder="Monto limpio sin puntos" pattern="[0-9]*">
-                    </div>
-                    <div>
-                        <label>Moneda</label>
-                        <select id="currency">
-                            <option value="CLP">CLP ($)</option>
-                            <option value="USD">USD (U$S)</option>
-                            <option value="ARS">ARS ($ Blue)</option>
-                            <option value="BRL">BRL (R$)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row-inputs" style="grid-template-columns: 1fr 1fr;">
-                    <div>
-                        <label>Categoría</label>
-                        <select id="category">
-                            <option value="ropa">Ropa</option>
-                            <option value="carteras">Carteras</option>
-                            <option value="accesorios">Accesorios</option>
-                            <option value="zapatillas">Zapatillas</option>
-                            <option value="electrónica">Electrónica</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Tienda</label>
-                        <input type="text" id="shop" placeholder="Ej: H&M, Zara...">
-                    </div>
-                </div>
-
-                <button class="btn-add" onclick="addItem()">✨ Agregar a Wishlist</button>
+            <div class="converter-footer">
+                <span id="ratesInfo">Cargando tasas...</span>
+                <button class="btn-refresh" onclick="fetchLiveRates()" id="btnRefreshRates">🔄</button>
             </div>
         </div>
 
-        <div class="filters-bar">
+        <div class="search-bar">
+            <span class="icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Buscar por producto o tienda..." oninput="render()">
+        </div>
+
+        <div class="filters-row">
             <select id="filterCategory" onchange="render()">
                 <option value="">Todas las categorías</option>
                 <option value="ropa">Ropa</option>
@@ -216,50 +207,143 @@
             <select id="filterShop" onchange="render()">
                 <option value="">Todas las tiendas</option>
             </select>
-            <button class="btn-clear-filters" onclick="clearFilters()">✕</button>
+            <select id="sortBy" onchange="render()">
+                <option value="recent">Más recientes</option>
+                <option value="price_asc">Precio: menor a mayor</option>
+                <option value="price_desc">Precio: mayor a menor</option>
+            </select>
+            <button class="btn-clear-filters" onclick="clearFilters()">✕ Limpiar</button>
         </div>
         <div class="filter-count" id="filterCount"></div>
+
+        <div class="form-card" id="formCard">
+            <div class="form-toggle-row" onclick="toggleForm()">
+                <span class="label">✨ Agregar artículo</span>
+                <span class="chevron">▾</span>
+            </div>
+            <div class="form-body">
+                <div class="form-body-inner">
+                    <div class="form-group">
+                        <label>Link Web (Opcional, pero habilita auto-carga)</label>
+                        <div class="link-row">
+                            <input type="url" id="link" placeholder="https://...">
+                            <button class="btn-fetch" id="btnFetch" onclick="fetchProductInfo()">Traer datos</button>
+                        </div>
+                        <div class="fetch-hint" id="fetchHint">Pegá el link y probamos traer título y precio automáticamente. No siempre funciona — revisá antes de guardar.</div>
+
+                        <label>Producto</label>
+                        <input type="text" id="title" placeholder="Ej: Zapatillas Adidas Samba, Cartera...">
+
+                        <div class="row-inputs">
+                            <div>
+                                <label>Precio Original</label>
+                                <input type="number" id="price" placeholder="Monto limpio sin puntos" pattern="[0-9]*">
+                            </div>
+                            <div>
+                                <label>Moneda</label>
+                                <select id="currency">
+                                    <option value="CLP">CLP ($)</option>
+                                    <option value="USD">USD (U$S)</option>
+                                    <option value="ARS">ARS ($ Blue)</option>
+                                    <option value="BRL">BRL (R$)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row-inputs" style="grid-template-columns: 1fr 1fr;">
+                            <div>
+                                <label>Categoría</label>
+                                <select id="category">
+                                    <option value="ropa">Ropa</option>
+                                    <option value="carteras">Carteras</option>
+                                    <option value="accesorios">Accesorios</option>
+                                    <option value="zapatillas">Zapatillas</option>
+                                    <option value="electrónica">Electrónica</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Tienda</label>
+                                <input type="text" id="shop" placeholder="Ej: H&M, Zara...">
+                            </div>
+                        </div>
+
+                        <button class="btn-add" onclick="addItem()">✨ Agregar a Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="grid" id="inventoryGrid"></div>
     </div>
 
+    <button class="fab" id="fabAdd" onclick="toggleForm()">+</button>
+
     <script>
-        let state = JSON.parse(localStorage.getItem('wishlist_chile_pro_v4')) || {
+        let state = JSON.parse(localStorage.getItem('wishlist_chile_pro_v5')) || {
             rates: { clp: 950, ars: 1250, brl: 5.60 },
             ratesUpdatedAt: null,
             items: []
         };
 
         function save() {
-            localStorage.setItem('wishlist_chile_pro_v4', JSON.stringify(state));
+            localStorage.setItem('wishlist_chile_pro_v5', JSON.stringify(state));
         }
 
-        function updateRate(key, val) {
-            const parsed = parseFloat(val);
-            if(parsed > 0) {
-                state.rates[key] = parsed;
-                state.ratesUpdatedAt = null; // ya no son "en vivo", el usuario las pisó
-                save();
-                renderRatesStatus();
-            }
+        // --- Colapsable del form ---
+        function toggleForm() {
+            const card = document.getElementById('formCard');
+            const opening = !card.classList.contains('open');
+            card.classList.toggle('open');
+            document.getElementById('fabAdd').classList.toggle('hidden', opening);
+            if(opening) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function renderRatesStatus() {
-            const el = document.getElementById('ratesUpdated');
-            if(state.ratesUpdatedAt) {
-                const d = new Date(state.ratesUpdatedAt);
-                el.textContent = `Actualizado en vivo: ${d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
-            } else {
-                el.textContent = 'Tasas manuales — tocá Actualizar para traer valores en vivo';
+        // --- Conversor de monedas ---
+        function clearConverterExcept(exceptId) {
+            ['convClp', 'convArs', 'convBrl', 'convUsd'].forEach(id => {
+                if(id !== exceptId) document.getElementById(id).value = '';
+            });
+            ['boxClp', 'boxArs', 'boxBrl', 'boxUsd'].forEach(id => document.getElementById(id).classList.remove('active'));
+        }
+
+        function convertFrom(sourceCurrency, rawValue) {
+            const value = parseFloat(rawValue);
+
+            if(rawValue === '' || isNaN(value)) {
+                clearConverterExcept(null);
+                return;
             }
+
+            let usdBase;
+            if(sourceCurrency === 'usd') usdBase = value;
+            else if(sourceCurrency === 'clp') usdBase = value / state.rates.clp;
+            else if(sourceCurrency === 'ars') usdBase = value / state.rates.ars;
+            else if(sourceCurrency === 'brl') usdBase = value / state.rates.brl;
+
+            const idMap = { clp: 'convClp', ars: 'convArs', brl: 'convBrl', usd: 'convUsd' };
+            const boxMap = { clp: 'boxClp', ars: 'boxArs', brl: 'boxBrl', usd: 'boxUsd' };
+
+            Object.keys(idMap).forEach(cur => document.getElementById(boxMap[cur]).classList.toggle('active', cur === sourceCurrency));
+
+            if(sourceCurrency !== 'clp') document.getElementById('convClp').value = Math.round(usdBase * state.rates.clp);
+            if(sourceCurrency !== 'ars') document.getElementById('convArs').value = Math.round(usdBase * state.rates.ars);
+            if(sourceCurrency !== 'brl') document.getElementById('convBrl').value = (usdBase * state.rates.brl).toFixed(2);
+            if(sourceCurrency !== 'usd') document.getElementById('convUsd').value = usdBase.toFixed(2);
+        }
+
+        function renderRatesInfo() {
+            const el = document.getElementById('ratesInfo');
+            const suffix = state.ratesUpdatedAt
+                ? ` · actualizado ${new Date(state.ratesUpdatedAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
+                : ' · manual';
+            el.textContent = `1 USD = $${state.rates.clp} CLP · Blue $${state.rates.ars} · R$${state.rates.brl}${suffix}`;
         }
 
         async function fetchLiveRates() {
             const btn = document.getElementById('btnRefreshRates');
             btn.disabled = true;
-            btn.textContent = '⏳ ...';
+            btn.textContent = '⏳';
             try {
-                // CLP y BRL vs USD (open.er-api.com: gratis, sin key, CORS habilitado)
                 const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
                 const fxData = await fxRes.json();
                 if(fxData && fxData.rates) {
@@ -267,7 +351,6 @@
                     if(fxData.rates.BRL) state.rates.brl = Math.round(fxData.rates.BRL * 100) / 100;
                 }
 
-                // Dólar blue ARS (dolarapi.com: gratis, sin key)
                 const blueRes = await fetch('https://dolarapi.com/v1/dolares/blue');
                 const blueData = await blueRes.json();
                 if(blueData && blueData.venta) {
@@ -276,19 +359,20 @@
 
                 state.ratesUpdatedAt = new Date().toISOString();
                 save();
+                clearConverterExcept(null);
+                renderRatesInfo();
                 render();
-                btn.textContent = '🔄 Actualizar';
+                btn.textContent = '🔄';
             } catch(err) {
                 console.error(err);
-                btn.textContent = '⚠️ Error, reintentar';
+                btn.textContent = '⚠️';
             } finally {
                 btn.disabled = false;
             }
         }
 
-        // Heurística de extracción: busca precio y título en texto plano de la página
+        // --- Auto-fetch de producto ---
         function extractTitle(text, fallbackUrl) {
-            // Busca líneas tipo "Title: ..." (r.jina.ai las suele incluir) o primer heading markdown
             const titleLineMatch = text.match(/^Title:\s*(.+)$/mi);
             if(titleLineMatch) return titleLineMatch[1].trim().slice(0, 120);
             const headingMatch = text.match(/^#\s+(.+)$/m);
@@ -297,7 +381,6 @@
         }
 
         function extractPrice(text) {
-            // Busca patrones de precio: $ 19.990, CLP 19990, R$ 199,90, USD 199.99, etc.
             const patterns = [
                 /(?:CLP|\$)\s?([\d]{1,3}(?:[.,]\d{3})+)(?!\d)/,
                 /(?:R\$)\s?([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/,
@@ -320,7 +403,7 @@
             if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
             if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
             if(/\bUSD\b|U\$S/i.test(text)) return 'USD';
-            return 'CLP'; // default dado que el viaje es a Chile
+            return 'CLP';
         }
 
         async function fetchProductInfo() {
@@ -339,7 +422,6 @@
             hint.className = 'fetch-hint';
 
             try {
-                // Proxy de lectura sin CORS ni backend propio. Devuelve la página como texto legible.
                 const proxyUrl = 'https://r.jina.ai/' + url;
                 const res = await fetch(proxyUrl);
                 if(!res.ok) throw new Error('proxy_failed');
@@ -373,10 +455,11 @@
                 hint.className = 'fetch-hint error';
             } finally {
                 btn.classList.remove('loading');
-                btn.textContent = '✨ Traer datos';
+                btn.textContent = 'Traer datos';
             }
         }
 
+        // --- CRUD ---
         function addItem() {
             const title = document.getElementById('title').value.trim();
             const price = parseFloat(document.getElementById('price').value);
@@ -390,7 +473,7 @@
                 return;
             }
 
-            state.items.unshift({ title, price, currency, category, shop, link });
+            state.items.unshift({ title, price, currency, category, shop, link, addedAt: Date.now() });
             save();
             render();
 
@@ -398,9 +481,11 @@
             document.getElementById('price').value = '';
             document.getElementById('shop').value = '';
             document.getElementById('link').value = '';
-            document.getElementById('fetchHint').textContent = 'Pegá el link y probamos traer título y precio automáticamente. No siempre funciona (depende de cada tienda) — revisá y corregí antes de guardar.';
+            document.getElementById('fetchHint').textContent = 'Pegá el link y probamos traer título y precio automáticamente. No siempre funciona — revisá antes de guardar.';
             document.getElementById('fetchHint').className = 'fetch-hint';
             document.activeElement.blur();
+
+            toggleForm();
         }
 
         function deleteItem(index) {
@@ -411,9 +496,12 @@
             }
         }
 
+        // --- Filtros / búsqueda / orden ---
         function clearFilters() {
             document.getElementById('filterCategory').value = '';
             document.getElementById('filterShop').value = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortBy').value = 'recent';
             render();
         }
 
@@ -428,48 +516,59 @@
             if(shops.includes(currentVal)) select.value = currentVal;
         }
 
-        function render() {
-            document.getElementById('rateClp').value = state.rates.clp;
-            document.getElementById('rateArs').value = state.rates.ars;
-            document.getElementById('rateBrl').value = state.rates.brl;
-            renderRatesStatus();
+        function usdValueOf(item) {
+            if(item.currency === 'USD') return item.price;
+            if(item.currency === 'CLP') return item.price / state.rates.clp;
+            if(item.currency === 'ARS') return item.price / state.rates.ars;
+            if(item.currency === 'BRL') return item.price / state.rates.brl;
+            return 0;
+        }
 
+        function render() {
+            renderRatesInfo();
             populateShopFilter();
 
             const categoryFilter = document.getElementById('filterCategory').value;
             const shopFilter = document.getElementById('filterShop').value;
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            const sortBy = document.getElementById('sortBy').value;
 
-            const filteredItems = state.items.filter(item => {
+            let filteredItems = state.items.filter(item => {
                 if(categoryFilter && item.category !== categoryFilter) return false;
                 if(shopFilter && item.shop !== shopFilter) return false;
+                if(searchTerm && !(item.title.toLowerCase().includes(searchTerm) || item.shop.toLowerCase().includes(searchTerm))) return false;
                 return true;
             });
 
+            if(sortBy === 'price_asc') filteredItems.sort((a, b) => usdValueOf(a) - usdValueOf(b));
+            else if(sortBy === 'price_desc') filteredItems.sort((a, b) => usdValueOf(b) - usdValueOf(a));
+
             document.getElementById('filterCount').textContent =
-                (categoryFilter || shopFilter)
+                (categoryFilter || shopFilter || searchTerm)
                     ? `Mostrando ${filteredItems.length} de ${state.items.length} artículos`
                     : '';
+
+            const totalUsd = state.items.reduce((sum, item) => sum + usdValueOf(item), 0);
+            document.getElementById('summaryBar').innerHTML = state.items.length
+                ? `<span class="count">${state.items.length} artículo${state.items.length === 1 ? '' : 's'} en tu wishlist</span><span class="total">U$S ${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                : `<span class="count">Todavía no agregaste nada</span>`;
 
             const grid = document.getElementById('inventoryGrid');
             grid.innerHTML = '';
 
             if(state.items.length === 0) {
-                grid.innerHTML = `<div class="empty-state">Historial limpio. Empezá a agregar artículos.</div>`;
+                grid.innerHTML = `<div class="empty-state">Historial limpio. Tocá el botón + para agregar tu primer artículo.</div>`;
                 return;
             }
 
             if(filteredItems.length === 0) {
-                grid.innerHTML = `<div class="empty-state">Ningún artículo coincide con este filtro.</div>`;
+                grid.innerHTML = `<div class="empty-state">Ningún artículo coincide con esta búsqueda o filtro.</div>`;
                 return;
             }
 
             filteredItems.forEach((item) => {
                 const index = state.items.indexOf(item);
-                let usdValue = 0;
-                if(item.currency === 'USD') usdValue = item.price;
-                else if(item.currency === 'CLP') usdValue = item.price / state.rates.clp;
-                else if(item.currency === 'ARS') usdValue = item.price / state.rates.ars;
-                else if(item.currency === 'BRL') usdValue = item.price / state.rates.brl;
+                const usdValue = usdValueOf(item);
 
                 const equivalentArs = (usdValue * state.rates.ars).toLocaleString('es-AR', { maximumFractionDigits: 0 });
                 const equivalentClp = (usdValue * state.rates.clp).toLocaleString('es-CL', { maximumFractionDigits: 0 });
@@ -515,6 +614,8 @@
         window.onload = function() {
             render();
             fetchLiveRates();
+            // Si es la primera vez (sin items), abrimos el form directamente
+            if(state.items.length === 0) toggleForm();
         };
     </script>
 </body>
