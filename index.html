@@ -52,9 +52,14 @@
         .summary-bar .total { font-weight: 700; color: var(--green); font-size: 1rem; }
 
         /* Conversor */
-        .converter-card { background: var(--surface); border-radius: 18px; margin-bottom: 0.55rem; padding: 1rem 1.1rem 0.9rem 1.1rem; }
-        .converter-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.85rem; }
+        .converter-card { background: var(--surface); border-radius: 18px; margin-bottom: 0.55rem; overflow: hidden; }
+        .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.1rem; cursor: pointer; }
         .converter-header .section-label { margin: 0; }
+        .converter-header .compact-preview { font-size: 0.78rem; color: var(--label2); font-weight: 500; }
+        .converter-body { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
+        .converter-card.open .converter-body { max-height: 320px; }
+        .converter-card.open .chevron { transform: rotate(180deg); }
+        .converter-body-inner { padding: 0.1rem 1.1rem 1rem 1.1rem; }
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
         .converter-box { background: var(--surface2); padding: 0.6rem 0.7rem; border-radius: 12px; display: flex; flex-direction: column; gap: 0.15rem; transition: box-shadow 0.15s ease; }
         .converter-box.active { box-shadow: inset 0 0 0 1.5px var(--accent); }
@@ -201,33 +206,41 @@
 
         <div class="summary-bar" id="summaryBar"></div>
 
-        <div class="converter-card">
-            <div class="converter-header">
+        <div class="converter-card" id="converterCard">
+            <div class="converter-header" onclick="toggleConverter()">
                 <span class="section-label">Conversor rápido</span>
+                <span style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="compact-preview" id="converterPreview"></span>
+                    <svg class="chevron" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
+                </span>
             </div>
-            <div class="converter-grid">
-                <div class="converter-box" id="boxClp">
-                    <label>CLP</label>
-                    <div class="input-group"><span class="cur-sym">$</span><input type="number" id="convClp" placeholder="Ingresar" oninput="convertFrom('clp', this.value)"></div>
+            <div class="converter-body">
+                <div class="converter-body-inner">
+                    <div class="converter-grid">
+                        <div class="converter-box" id="boxClp">
+                            <label>CLP</label>
+                            <div class="input-group"><span class="cur-sym">$</span><input type="number" id="convClp" placeholder="Ingresar" oninput="convertFrom('clp', this.value)"></div>
+                        </div>
+                        <div class="converter-box" id="boxArs">
+                            <label>ARS · Blue</label>
+                            <div class="input-group"><span class="cur-sym">$</span><input type="number" id="convArs" placeholder="Ingresar" oninput="convertFrom('ars', this.value)"></div>
+                        </div>
+                        <div class="converter-box" id="boxBrl">
+                            <label>BRL</label>
+                            <div class="input-group"><span class="cur-sym">R$</span><input type="number" id="convBrl" placeholder="Ingresar" oninput="convertFrom('brl', this.value)"></div>
+                        </div>
+                        <div class="converter-box" id="boxUsd">
+                            <label>USD</label>
+                            <div class="input-group"><span class="cur-sym">U$S</span><input type="number" id="convUsd" placeholder="Ingresar" oninput="convertFrom('usd', this.value)"></div>
+                        </div>
+                    </div>
+                    <div class="converter-footer">
+                        <span id="ratesInfo">Cargando tasas...</span>
+                        <button class="btn-icon" onclick="event.stopPropagation(); fetchLiveRates()" id="btnRefreshRates">
+                            <svg class="icon" viewBox="0 0 20 20"><path d="M16 5.5a6.5 6.5 0 1 0 1.5 5.5M16 5.5V2M16 5.5h-3.5"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="converter-box" id="boxArs">
-                    <label>ARS · Blue</label>
-                    <div class="input-group"><span class="cur-sym">$</span><input type="number" id="convArs" placeholder="Ingresar" oninput="convertFrom('ars', this.value)"></div>
-                </div>
-                <div class="converter-box" id="boxBrl">
-                    <label>BRL</label>
-                    <div class="input-group"><span class="cur-sym">R$</span><input type="number" id="convBrl" placeholder="Ingresar" oninput="convertFrom('brl', this.value)"></div>
-                </div>
-                <div class="converter-box" id="boxUsd">
-                    <label>USD</label>
-                    <div class="input-group"><span class="cur-sym">U$S</span><input type="number" id="convUsd" placeholder="Ingresar" oninput="convertFrom('usd', this.value)"></div>
-                </div>
-            </div>
-            <div class="converter-footer">
-                <span id="ratesInfo">Cargando tasas...</span>
-                <button class="btn-icon" onclick="fetchLiveRates()" id="btnRefreshRates">
-                    <svg class="icon" viewBox="0 0 20 20"><path d="M16 5.5a6.5 6.5 0 1 0 1.5 5.5M16 5.5V2M16 5.5h-3.5"/></svg>
-                </button>
             </div>
         </div>
 
@@ -340,6 +353,11 @@
             if(opening) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        // --- Colapsable del conversor ---
+        function toggleConverter() {
+            document.getElementById('converterCard').classList.toggle('open');
+        }
+
         // --- Conversor de monedas ---
         function clearConverterExcept(exceptId) {
             ['convClp', 'convArs', 'convBrl', 'convUsd'].forEach(id => {
@@ -377,6 +395,9 @@
                 ? `Actualizado ${new Date(state.ratesUpdatedAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
                 : 'Tasas manuales';
             el.textContent = suffix;
+
+            document.getElementById('converterPreview').textContent =
+                `$${state.rates.clp} · $${state.rates.ars} · R$${state.rates.brl}`;
         }
 
         async function fetchLiveRates() {
