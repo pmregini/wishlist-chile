@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Chile v6.2</title>
+    <title>Wishlist Maker v6.8</title>
     <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,8 @@
             --label: #ffffff;
             --label2: #98989d;
             --label3: #636366;
-            --accent: #0a84ff;
+            --accent: #007aff;
+            --accent-dim: rgba(0,122,255,0.15);
             --green: #30d158;
             --orange: #ff9f0a;
             --red: #ff453a;
@@ -31,191 +32,176 @@
         body {
             background: var(--bg);
             color: var(--label);
-            padding: calc(env(safe-area-inset-top) + 0.75rem) 1rem calc(env(safe-area-inset-bottom) + 5.5rem) 1rem;
+            padding: calc(env(safe-area-inset-top) + 0.6rem) 0.8rem calc(env(safe-area-inset-bottom) + 5.5rem) 0.8rem;
             letter-spacing: -0.01em;
         }
 
         .container { max-width: 500px; margin: 0 auto; }
 
-        /* Header */
-        header { padding: 0.4rem 0.1rem 1.1rem 0.1rem; }
-        h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
-        .subtitle { color: var(--label2); font-size: 0.85rem; margin-top: 0.15rem; font-weight: 400; }
+        header { padding: 0.3rem 0.1rem 0.9rem 0.1rem; display: flex; justify-content: space-between; align-items: flex-start; }
+        h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+        .subtitle { color: var(--label2); font-size: 0.8rem; margin-top: 0.1rem; font-weight: 400; }
 
         .icon { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-        .section-label { font-size: 0.72rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.04em; margin: 1.3rem 0 0.5rem 0.3rem; }
+        .section-label { font-size: 0.7rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.04em; margin: 1rem 0 0.4rem 0.2rem; }
         .section-label:first-of-type { margin-top: 0; }
 
-        /* Resumen con Desglose Wishlist vs Comprado */
-        .summary-bar { background: var(--surface); border-radius: 16px; padding: 0.9rem 1.1rem; margin-bottom: 0.55rem; display: flex; flex-direction: column; gap: 0.4rem; }
+        .summary-bar { background: var(--surface); border-radius: 14px; padding: 0.8rem 1rem; margin-bottom: 0.45rem; display: flex; flex-direction: column; gap: 0.3rem; }
         .summary-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .summary-row:not(:last-child) { border-bottom: 1px solid var(--separator); padding-bottom: 0.4rem; }
-        .summary-bar .count { color: var(--label2); font-size: 0.88rem; font-weight: 500; }
-        .summary-bar .total { font-weight: 700; font-size: 0.95rem; }
+        .summary-row:not(:last-child) { border-bottom: 1px solid var(--separator); padding-bottom: 0.3rem; }
+        .summary-bar .count { color: var(--label2); font-size: 0.82rem; font-weight: 500; }
+        .summary-bar .total { font-weight: 700; font-size: 0.9rem; }
         .summary-bar .total.pending { color: var(--accent); }
         .summary-bar .total.bought { color: var(--green); }
 
-        /* Conversor Destacado — header reestructurado para que el chevron nunca quede pegado */
-        .converter-card { background: var(--surface2); border: 1.5px solid var(--surface3); border-radius: 18px; margin-bottom: 0.55rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 1.1rem; cursor: pointer; gap: 0.6rem; }
-        .converter-header .section-label { margin: 0; color: var(--label); font-weight: 700; display: flex; align-items: center; gap: 0.35rem; flex: 1 1 auto; min-width: 0; white-space: nowrap; }
-        .converter-header-right { display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
-        .compact-preview-box { background: var(--surface); padding: 0.35rem 0.6rem; border-radius: 8px; font-size: 0.76rem; font-weight: 600; border: 1px solid var(--separator); white-space: nowrap; }
-        .compact-preview-box .c-clp { color: var(--label); }
-        .compact-preview-box .c-ars { color: var(--orange); }
-        .compact-preview-box .c-brl { color: var(--teal); }
-        .compact-preview-box .sep { color: var(--label3); font-weight: 400; margin: 0 0.15rem; }
-
-        .chevron { transition: transform 0.25s ease; color: var(--label3); width: 15px; height: 15px; flex-shrink: 0; }
-        .converter-card.open .chevron, .form-card.open .chevron { transform: rotate(180deg); }
-
+        /* Conversor Desplegable Arreglado */
+        .converter-card { background: var(--surface2); border: 1px solid var(--surface3); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; gap: 0.5rem; }
+        .converter-header-title { display: flex; align-items: center; gap: 0.4rem; flex: 1; }
+        .converter-header .section-label { margin: 0; color: var(--label); font-weight: 700; white-space: nowrap; }
+        .converter-header .compact-preview-box { background: var(--surface); padding: 0.3rem 0.5rem; border-radius: 7px; font-size: 0.74rem; color: var(--label2); font-weight: 600; border: 1px solid var(--separator); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+        
         .converter-body { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
         .converter-card.open .converter-body { max-height: 320px; }
-        .converter-body-inner { padding: 0.1rem 1.1rem 1rem 1.1rem; }
+        .converter-card.open #chevronIndicator { transform: rotate(180deg); }
+        .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
+        
+        .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .converter-box { background: var(--surface); padding: 0.5rem 0.6rem; border-radius: 11px; display: flex; flex-direction: column; gap: 0.1rem; }
+        
+        .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
+        .converter-box#boxClp { border-left: 3.5px solid var(--red); }
+        .converter-box#boxBrl { border-left: 3.5px solid var(--brl-green); }
+        .converter-box#boxArs { border-left: 3.5px solid var(--accent); }
+        
+        .converter-box label { font-size: 0.65rem; color: var(--label2); font-weight: 600; }
+        .converter-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
+        .converter-box .cur-sym { font-weight: 600; font-size: 0.85rem; color: var(--label2); }
+        .converter-box input { background: transparent; border: none; font-weight: 700; width: 100%; font-size: 1rem; outline: none; font-variant-numeric: tabular-nums; color: var(--label); }
+        
+        .converter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; font-size: 0.7rem; color: var(--label3); }
 
-        .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
-        .converter-box { background: var(--surface); padding: 0.6rem 0.7rem; border-radius: 12px; display: flex; flex-direction: column; gap: 0.15rem; transition: box-shadow 0.15s ease; }
-        .converter-box.active { box-shadow: inset 0 0 0 1.5px var(--accent); }
-
-        .converter-box#boxUsd { border-left: 4px solid var(--teal); }
-        .converter-box#boxClp { border-left: 4px solid var(--red); }
-        .converter-box#boxBrl { border-left: 4px solid var(--brl-green); }
-        .converter-box#boxArs { border-left: 4px solid var(--accent); }
-
-        .converter-box label { font-size: 0.68rem; color: var(--label2); font-weight: 600; }
-        .converter-box .input-group { display: flex; align-items: center; gap: 0.3rem; }
-        .converter-box .cur-sym { font-weight: 600; font-size: 0.88rem; color: var(--label2); }
-        .converter-box input { background: transparent; border: none; font-weight: 700; width: 100%; font-size: 1.05rem; outline: none; font-variant-numeric: tabular-nums; color: var(--label); }
-        .converter-box input::placeholder { color: var(--label3); font-weight: 500; }
-
-        .converter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; font-size: 0.72rem; color: var(--label3); }
-        .btn-icon { background: var(--surface2); border: none; color: var(--label2); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .btn-icon.spinning .icon { animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Formulario colapsable — destacado como CTA cuando está cerrado */
-        .form-card { background: var(--surface); border-radius: 18px; margin-bottom: 0.55rem; overflow: hidden; border-top: 3px solid var(--accent); }
-        .form-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 1.05rem 1.1rem; cursor: pointer; background: rgba(10,132,255,0.14); transition: background 0.2s ease; }
-        .form-card.open .form-toggle-row { background: transparent; }
-        .form-toggle-row .label { font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.65rem; color: var(--label); }
-        .icon-badge { width: 27px; height: 27px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .icon-badge .icon { color: white; stroke: white; width: 15px; height: 15px; }
+        /* Formulario Abierto/Cerrado Resaltado */
+        .form-card { background: var(--surface); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; border: 1px solid var(--separator); }
+        .form-card.open { border-color: rgba(0,122,255,0.4); box-shadow: 0 0 10px rgba(0,122,255,0.15); }
+        .form-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; }
+        .form-toggle-row .label { font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; color: var(--label); }
+        .form-toggle-row .label .icon { color: var(--accent); width: 18px; height: 19px; }
+        .form-card.open .chevron { transform: rotate(180deg); }
         .form-body { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
         .form-card.open .form-body { max-height: 950px; }
-        .form-body-inner { padding: 0.2rem 1.1rem 1.1rem 1.1rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.7rem; }
-        .field-label { font-size: 0.72rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.3rem; }
+        .form-body-inner { padding: 0.1rem 1rem 1rem 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.6rem; }
+        .field-label { font-size: 0.68rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.2rem; }
         .field-label:first-child { margin-top: 0; }
-        .form-group input, .form-group select { background: var(--surface2); border: none; padding: 0.75rem 0.85rem; border-radius: 11px; color: var(--label); font-size: 0.95rem; -webkit-appearance: none; outline: none; }
+        
+        .form-group input, .form-group select { background: var(--surface2); border: none; padding: 0.7rem 0.8rem; border-radius: 10px; color: var(--label); font-size: 0.9rem; -webkit-appearance: none; outline: none; transition: opacity 0.2s ease, background-color 0.2s ease; }
         .form-group input::placeholder { color: var(--label3); }
+        .form-group input.is-scraping { opacity: 0.5; background-color: var(--surface3); }
+        .form-group input.is-scraping::placeholder { color: var(--accent); font-weight: 500; }
+        
         .form-group select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%2398989d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 8l4 4 4-4'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
-        .row-inputs { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0.6rem; }
-        .link-row { display: flex; gap: 0.5rem; }
+        .row-inputs { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0.55rem; }
+        .link-row { display: flex; gap: 0.45rem; }
         .link-row input { flex: 1; }
-        .btn-fetch { background: var(--surface2); border: none; color: var(--accent); font-weight: 600; padding: 0 1rem; border-radius: 11px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
-        .btn-fetch.loading { opacity: 0.5; }
-        .fetch-hint { font-size: 0.74rem; color: var(--label3); margin-top: -0.15rem; line-height: 1.3; }
+        .btn-fetch { background: var(--surface2); border: none; color: var(--accent); font-weight: 600; padding: 0 0.9rem; border-radius: 10px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; }
+        .fetch-hint { font-size: 0.7rem; color: var(--label3); margin-top: -0.1rem; line-height: 1.3; }
         .fetch-hint.error { color: var(--red); }
         .fetch-hint.success { color: var(--green); }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0.9rem; border-radius: 13px; font-weight: 700; font-size: 0.97rem; margin-top: 0.5rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.45rem; }
-        .btn-add .icon { stroke: white; }
+        
+        /* Botón de Carga Principal Ultra Resaltado */
+        .btn-add { background: var(--accent); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 12px; font-weight: 700; font-size: 0.92rem; margin-top: 0.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.45rem; box-shadow: 0 4px 10px rgba(0,122,255,0.3); }
+        .btn-add:active { opacity: 0.85; }
 
-        /* Búsqueda y filtros */
-        .search-bar { background: var(--surface); border-radius: 13px; padding: 0.7rem 0.9rem; margin-bottom: 0.55rem; display: flex; align-items: center; gap: 0.55rem; }
-        .search-bar .icon { color: var(--label3); width: 17px; height: 17px; flex-shrink: 0; }
-        .search-bar input { flex: 1; background: transparent; border: none; color: var(--label); font-size: 0.95rem; outline: none; }
+        .search-bar { background: var(--surface); border-radius: 12px; padding: 0.6rem 0.8rem; margin-top: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.5rem; }
+        .search-bar .icon { color: var(--label3); width: 16px; height: 16px; flex-shrink: 0; }
+        .search-bar input { flex: 1; background: transparent; border: none; color: var(--label); font-size: 0.9rem; outline: none; }
         .search-bar input::placeholder { color: var(--label3); }
 
-        .filters-row { display: flex; gap: 0.5rem; margin-bottom: 0.35rem; overflow-x: auto; padding-bottom: 0.1rem; scrollbar-width: none; }
+        .filters-row { display: flex; gap: 0.45rem; margin-bottom: 0.25rem; overflow-x: auto; padding-bottom: 0.1rem; scrollbar-width: none; }
         .filters-row::-webkit-scrollbar { display: none; }
-        .filters-row select { background: var(--surface); border: none; color: var(--label); padding: 0.6rem 1.7rem 0.6rem 0.85rem; border-radius: 11px; font-size: 0.82rem; font-weight: 500; -webkit-appearance: none; outline: none; flex-shrink: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%2398989d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 8l4 4 4-4'/></svg>"); background-repeat: no-repeat; background-position: right 6px center; }
-        .btn-clear-filters { background: var(--surface); border: none; color: var(--label2); font-size: 0.8rem; font-weight: 500; padding: 0.6rem 0.85rem; border-radius: 11px; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 0.3rem; }
-        .btn-clear-filters .icon { width: 13px; height: 13px; }
-        .filter-count { font-size: 0.75rem; color: var(--label3); margin-bottom: 0.7rem; padding: 0 0.2rem; min-height: 0.9rem; }
+        .filters-row select { background: var(--surface); border: none; color: var(--label); padding: 0.55rem 1.5rem 0.55rem 0.75rem; border-radius: 10px; font-size: 0.8rem; font-weight: 500; -webkit-appearance: none; outline: none; flex-shrink: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2398989d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M5 7l4 4 4-4'/></svg>"); background-repeat: no-repeat; background-position: right 5px center; }
+        .btn-clear-filters { background: var(--surface); border: none; color: var(--label2); font-size: 0.78rem; font-weight: 500; padding: 0.55rem 0.8rem; border-radius: 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 0.25rem; }
+        .btn-clear-filters .icon { width: 12px; height: 12px; }
+        .filter-count { font-size: 0.72rem; color: var(--label3); margin-bottom: 0.5rem; padding: 0 0.15rem; min-height: 0.85rem; }
 
-        /* Panel de Sincronización Nube */
-        .sync-card { background: var(--surface); border-radius: 18px; margin-top: 2rem; overflow: hidden; border: 1px dashed var(--surface3); }
-        .sync-body-inner { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.6rem; }
-        .sync-actions { display: flex; gap: 0.5rem; margin-top: 0.4rem; }
-        .btn-sync { flex: 1; padding: 0.7rem; border-radius: 11px; border: none; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.3rem; color: #fff; }
-        .btn-sync.upload { background: var(--purple); }
-        .btn-sync.download { background: var(--surface2); border: 1px solid var(--surface3); color: var(--label); }
+        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: var(--purple); width: 38px; height: 30px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
 
-        /* FAB */
-        .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1.2rem); right: 1.2rem; background: var(--accent); color: white; border: none; width: 54px; height: 54px; border-radius: 50%; box-shadow: 0 6px 18px rgba(10,132,255,0.45); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; transition: transform 0.15s ease; }
-        .fab:active { transform: scale(0.9); }
-        .fab .icon { width: 24px; height: 24px; stroke: white; stroke-width: 2; }
+        .settings-footer { margin-top: 2.5rem; text-align: center; }
+        .btn-settings-link { background: transparent; border: none; color: var(--label3); font-size: 0.72rem; text-decoration: underline; cursor: pointer; }
+
+        .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1rem); right: 1rem; background: var(--accent); color: white; border: none; width: 50px; height: 48px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,122,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; }
+        .fab .icon { width: 22px; height: 22px; stroke: white; stroke-width: 2; }
         .fab.hidden { display: none; }
 
-        /* Tags de categoría — con color, siempre visibles (bug fix: faltaban en v6.1) */
-        .category-badge { display: inline-flex; align-items: center; gap: 0.32rem; padding: 0.24rem 0.55rem; border-radius: 20px; font-size: 0.66rem; font-weight: 700; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.02em; flex-shrink: 0; }
-        .category-badge .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-        .badge-ropa { background: rgba(10,132,255,0.15); color: #64b5ff; }
-        .badge-ropa .dot { background: #64b5ff; }
-        .badge-carteras { background: rgba(255,55,95,0.15); color: #ff7a9c; }
-        .badge-carteras .dot { background: #ff7a9c; }
-        .badge-accesorios { background: rgba(90,200,234,0.15); color: #7fd6ef; }
-        .badge-accesorios .dot { background: #7fd6ef; }
-        .badge-zapatillas { background: rgba(255,159,10,0.15); color: #ffb454; }
-        .badge-zapatillas .dot { background: #ffb454; }
-        .badge-electrónica { background: rgba(191,90,242,0.15); color: #d493f7; }
-        .badge-electrónica .dot { background: #d493f7; }
-
-        /* Tarjetas — más compactas: tienda + precio comparten una línea */
-        .grid { display: flex; flex-direction: column; gap: 0.55rem; }
-        .card { background: var(--surface); border-radius: 16px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.55rem; position: relative; transition: opacity 0.25s ease; }
-        .card.is-bought { opacity: 0.45; }
-
-        .btn-check-ios { background: transparent; border: 2px solid var(--label3); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+        /* Módulos de artículos optimizados v6.8 */
+        .grid { display: flex; flex-direction: column; gap: 0.5rem; }
+        .card { background: var(--surface); border-radius: 15px; padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; position: relative; transition: opacity 0.22s ease; }
+        .card.is-bought { opacity: 0.42; }
+        
+        .btn-check-ios { background: transparent; border: 2px solid var(--label3); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .card.is-bought .btn-check-ios { background: var(--green); border-color: var(--green); }
-        .btn-check-ios .icon { width: 11px; height: 11px; stroke: white; stroke-width: 3; display: none; }
+        .btn-check-ios .icon { width: 11px; height: 11px; stroke: white; stroke-width: 3.2; display: none; }
         .card.is-bought .btn-check-ios .icon { display: block; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.55rem; }
-        .card-header-main { display: flex; gap: 0.6rem; align-items: flex-start; flex: 1; min-width: 0; }
-        .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.005em; }
-        .card.is-bought .card-title { text-decoration: line-through; color: var(--label2); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+        .card-header-main { display: flex; gap: 0.6rem; align-items: center; flex: 1; min-width: 0; }
+        .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Badges de Categoría Soft de Early Versions */
+        .category-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.55rem; border-radius: 12px; font-size: 0.65rem; font-weight: 600; white-space: nowrap; text-transform: uppercase; }
+        .category-badge .dot { width: 5px; height: 5px; border-radius: 50%; }
+        .badge-ropa { background: rgba(10,132,255,0.15); color: #64b5ff; } .badge-ropa .dot { background: #64b5ff; }
+        .badge-carteras { background: rgba(255,55,95,0.15); color: #ff7a9c; } .badge-carteras .dot { background: #ff7a9c; }
+        .badge-accesorios { background: rgba(90,200,234,0.15); color: #7fd6ef; } .badge-accesorios .dot { background: #7fd6ef; }
+        .badge-zapatillas { background: rgba(255,159,10,0.15); color: #ffb454; } .badge-zapatillas .dot { background: #ffb454; }
+        .badge-electrónica { background: rgba(191,90,242,0.15); color: #d493f7; } .badge-electrónica .dot { background: #d493f7; }
 
-        /* Tienda + precio en una sola línea, debajo del título */
-        .card-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; padding-left: calc(20px + 0.6rem); }
-        .card-meta .shop-info { font-size: 0.78rem; color: var(--label2); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .card-meta .price-inline { display: flex; align-items: baseline; gap: 0.25rem; flex-shrink: 0; }
-        .card-meta .price-inline .origin-val { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
-        .card-meta .price-inline .origin-cur { font-size: 0.62rem; color: var(--label3); font-weight: 600; }
+        /* Fusión en una sola línea de Tienda y Precio Principal */
+        .price-hero { display: flex; align-items: baseline; justify-content: space-between; padding-left: calc(20px + 0.6rem); margin-top: -0.1rem; }
+        .price-hero .origin-val { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; color: var(--label); }
+        .price-hero .origin-cur { font-size: 0.68rem; color: var(--label3); font-weight: 600; margin-left: 0.15rem; }
+        .shop-info { font-size: 0.78rem; color: var(--label2); font-weight: 500; background: var(--surface2); padding: 0.1rem 0.45rem; border-radius: 6px; }
 
-        .other-currencies { display: flex; gap: 0.45rem; padding-left: calc(20px + 0.6rem); }
-        .cur-chip { flex: 1; background: var(--surface2); border-radius: 10px; padding: 0.42rem 0.55rem; display: flex; flex-direction: column; gap: 0.08rem; min-width: 0; }
-        .cur-chip .cur-chip-label { font-size: 0.6rem; color: var(--label3); font-weight: 600; text-transform: uppercase; }
-        .cur-chip .cur-chip-value { font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        /* Grilla de conversión compacta */
+        .other-currencies { display: flex; gap: 0.4rem; padding-left: calc(20px + 0.6rem); }
+        .cur-chip { flex: 1; background: var(--surface2); border-radius: 9px; padding: 0.35rem 0.5rem; display: flex; flex-direction: column; gap: 0.05rem; }
+        .cur-chip .cur-chip-label { font-size: 0.58rem; color: var(--label3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
+        .cur-chip .cur-chip-value { font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
         .cur-chip.is-usd .cur-chip-value { color: var(--green); }
         .cur-chip.is-ars .cur-chip-value { color: var(--orange); }
 
-        .actions { display: flex; gap: 0.45rem; padding-left: calc(20px + 0.6rem); }
-        .btn-view { flex: 1; background: var(--surface2); border: none; color: var(--label); text-align: center; padding: 0.55rem; border-radius: 10px; text-decoration: none; font-size: 0.82rem; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 0.35rem; }
-        .btn-view .icon { width: 13px; height: 13px; }
-        .btn-delete { background: rgba(255,69,58,0.12); border: none; color: var(--red); padding: 0.55rem 0.8rem; border-radius: 10px; display: flex; align-items: center; cursor: pointer; }
-        .btn-delete .icon { width: 15px; height: 15px; }
+        .actions { display: flex; gap: 0.4rem; padding-left: calc(20px + 0.6rem); }
+        .btn-view { flex: 1; background: var(--surface2); border: none; color: var(--label); text-align: center; padding: 0.45rem; border-radius: 9px; text-decoration: none; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 0.3rem; }
+        .btn-view .icon { width: 12px; height: 12px; }
+        .btn-delete { background: rgba(255,69,58,0.1); border: none; color: var(--red); padding: 0.45rem 0.8rem; border-radius: 9px; display: flex; align-items: center; }
+        .btn-delete .icon { width: 13px; height: 13px; }
 
-        .empty-state { text-align: center; color: var(--label3); padding: 3.5rem 1.5rem; font-size: 0.9rem; line-height: 1.5; }
+        .empty-state { text-align: center; color: var(--label3); padding: 3rem 1rem; font-size: 0.85rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Wishlist Chile</h1>
-            <div class="subtitle">Multi-divisas con conversión a dólar blue</div>
+            <div>
+                <h1>Wishlist Maker</h1>
+                <div class="subtitle">Multi-divisas con conversión a dólar blue</div>
+            </div>
+            <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
         </header>
 
         <div class="summary-bar" id="summaryBar"></div>
 
         <div class="converter-card" id="converterCard">
             <div class="converter-header" onclick="toggleConverter()">
-                <span class="section-label">💱 Conversor rápido</span>
-                <span class="converter-header-right">
+                <div class="converter-header-title">
+                    <span class="section-label">💱 Conversor rápido</span>
                     <span class="compact-preview-box" id="converterPreview"></span>
-                    <svg class="chevron" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
-                </span>
+                </div>
+                <span id="chevronIndicator" style="font-size:0.7rem; color:var(--label3); transition: transform 0.25s ease;">▼</span>
             </div>
             <div class="converter-body">
                 <div class="converter-body-inner">
@@ -250,10 +236,10 @@
         <div class="form-card" id="formCard">
             <div class="form-toggle-row" onclick="toggleForm()">
                 <span class="label">
-                    <span class="icon-badge"><svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg></span>
+                    <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
                     Agregar artículo
                 </span>
-                <svg class="chevron" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
+                <span class="chevron" style="font-size:0.7rem; color:var(--label3); transition: transform 0.25s ease;">▼</span>
             </div>
             <div class="form-body">
                 <div class="form-body-inner">
@@ -306,6 +292,11 @@
         </div>
 
         <div class="filters-row">
+            <select id="filterStatus" onchange="render()">
+                <option value="">Todos los estados</option>
+                <option value="pending">Solo Pendientes</option>
+                <option value="bought">Solo Comprados</option>
+            </select>
             <select id="filterCategory" onchange="render()">
                 <option value="">Todas las categorías</option>
                 <option value="ropa">Ropa</option>
@@ -331,18 +322,8 @@
 
         <div class="grid" id="inventoryGrid"></div>
 
-        <div class="sync-card">
-            <div class="sync-body-inner">
-                <span class="section-label" style="margin:0;">☁️ Sincronización en la nube</span>
-                <div class="form-group" style="margin-top:0.4rem;">
-                    <input type="password" id="ghToken" placeholder="GitHub Personal Access Token (PAT)">
-                    <input type="text" id="ghGistId" placeholder="Gist ID Asociado">
-                </div>
-                <div class="sync-actions">
-                    <button class="btn-sync upload" onclick="cloudUpload()">⬆️ Subir a la Nube</button>
-                    <button class="btn-sync download" onclick="cloudDownload()">⬇️ Descargar de Nube</button>
-                </div>
-            </div>
+        <div class="settings-footer">
+            <button class="btn-settings-link" onclick="forceSetupCredentials()">⚙️ Reconfigurar credenciales de la nube</button>
         </div>
     </div>
 
@@ -351,14 +332,15 @@
     </button>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('wishlist_chile_pro_v5')) || {
+        let state = JSON.parse(localStorage.getItem('wishlist_pro_v6')) || {
             rates: { clp: 950, ars: 1250, brl: 5.60 },
             ratesUpdatedAt: null,
             items: []
         };
 
         function save() {
-            localStorage.setItem('wishlist_chile_pro_v5', JSON.stringify(state));
+            localStorage.setItem('wishlist_pro_v6', JSON.stringify(state));
+            autoPushToCloud();
         }
 
         function toggleForm() {
@@ -377,7 +359,6 @@
             ['convClp', 'convArs', 'convBrl', 'convUsd'].forEach(id => {
                 if(id !== exceptId) document.getElementById(id).value = '';
             });
-            ['boxClp', 'boxArs', 'boxBrl', 'boxUsd'].forEach(id => document.getElementById(id).classList.remove('active'));
         }
 
         function convertFrom(sourceCurrency, rawValue) {
@@ -393,9 +374,6 @@
             else if(sourceCurrency === 'ars') usdBase = value / state.rates.ars;
             else if(sourceCurrency === 'brl') usdBase = value / state.rates.brl;
 
-            const boxMap = { clp: 'boxClp', ars: 'boxArs', brl: 'boxBrl', usd: 'boxUsd' };
-            Object.keys(boxMap).forEach(cur => document.getElementById(boxMap[cur]).classList.toggle('active', cur === sourceCurrency));
-
             if(sourceCurrency !== 'clp') document.getElementById('convClp').value = Math.round(usdBase * state.rates.clp);
             if(sourceCurrency !== 'ars') document.getElementById('convArs').value = Math.round(usdBase * state.rates.ars);
             if(sourceCurrency !== 'brl') document.getElementById('convBrl').value = (usdBase * state.rates.brl).toFixed(2);
@@ -404,18 +382,18 @@
 
         function renderRatesInfo() {
             const el = document.getElementById('ratesInfo');
-            el.textContent = state.ratesUpdatedAt
-                ? `Actualizado ${new Date(state.ratesUpdatedAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
-                : 'Tasas manuales';
-
-            document.getElementById('converterPreview').innerHTML =
-                `<span class="c-clp">$${state.rates.clp}</span><span class="sep">·</span><span class="c-ars">$${state.rates.ars}</span><span class="sep">·</span><span class="c-brl">R$${state.rates.brl}</span>`;
+            if(el) {
+                el.textContent = state.ratesUpdatedAt
+                    ? `Actualizado ${new Date(state.ratesUpdatedAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
+                    : 'Tasas manuales';
+            }
+            document.getElementById('converterPreview').textContent =
+                `${state.rates.clp} CLP - ${state.rates.ars} ARS - ${state.rates.brl} BRL`;
         }
 
         async function fetchLiveRates() {
             const btn = document.getElementById('btnRefreshRates');
-            btn.classList.add('spinning');
-            btn.disabled = true;
+            if(btn) btn.classList.add('spinning');
             try {
                 const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
                 const fxData = await fxRes.json();
@@ -435,10 +413,8 @@
                 render();
             } catch(err) {
                 console.error(err);
-                document.getElementById('ratesInfo').textContent = 'No se pudo actualizar';
             } finally {
-                btn.classList.remove('spinning');
-                btn.disabled = false;
+                if(btn) btn.classList.remove('spinning');
             }
         }
 
@@ -472,7 +448,6 @@
             if(url.includes('.cl') || /\bCLP\b/i.test(text)) return 'CLP';
             if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
             if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
-            if(/\bUSD\b|U\$S/i.test(text)) return 'USD';
             return 'CLP';
         }
 
@@ -480,44 +455,54 @@
             const url = document.getElementById('link').value.trim();
             const hint = document.getElementById('fetchHint');
             const btn = document.getElementById('btnFetch');
-            if(!url) {
-                hint.textContent = 'Pegá primero un link.';
-                hint.className = 'fetch-hint error';
-                return;
-            }
+            const titleInput = document.getElementById('title');
+            const priceInput = document.getElementById('price');
+            
+            if(!url) return;
 
             btn.classList.add('loading');
-            btn.textContent = 'Buscando...';
+            btn.textContent = '...';
+            hint.textContent = 'Consultando código de la tienda...';
+            hint.className = 'fetch-hint';
+            
+            titleInput.classList.add('is-scraping');
+            priceInput.classList.add('is-scraping');
+            titleInput.placeholder = '🔍 Buscando título en la web...';
+            priceInput.placeholder = '...';
+            titleInput.value = '';
+            priceInput.value = '';
 
             try {
                 const proxyUrl = 'https://r.jina.ai/' + url;
                 const res = await fetch(proxyUrl);
-                if(!res.ok) throw new Error('proxy_failed');
                 const text = await res.text();
 
                 const title = extractTitle(text, url);
                 const price = extractPrice(text);
                 const currency = detectCurrency(text, url);
 
-                if(title) document.getElementById('title').value = title;
-                if(price) document.getElementById('price').value = price;
+                titleInput.placeholder = 'Ej: Zapatillas Adidas Samba, Cartera...';
+                priceInput.placeholder = 'Monto sin puntos';
+
+                if(title) titleInput.value = title;
+                if(price) priceInput.value = price;
                 document.getElementById('currency').value = currency;
 
                 try {
                     const hostname = new URL(url).hostname.replace('www.', '').split('.')[0];
-                    if(!document.getElementById('shop').value) {
-                        document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
-                    }
+                    document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
                 } catch(e) {}
 
                 hint.textContent = price ? 'Completado. Revisá antes de guardar.' : 'Datos parciales. Completá a mano.';
-                hint.className = price ? 'fetch-hint success' : 'fetch-hint error';
+                hint.className = 'fetch-hint success';
             } catch(err) {
-                hint.textContent = 'No se pudo leer esta tienda automáticamente. Cargá a mano.';
+                hint.textContent = 'Error de lectura. Cargá a mano.';
                 hint.className = 'fetch-hint error';
             } finally {
                 btn.classList.remove('loading');
                 btn.textContent = 'Traer datos';
+                titleInput.classList.remove('is-scraping');
+                priceInput.classList.remove('is-scraping');
             }
         }
 
@@ -545,6 +530,7 @@
             document.getElementById('fetchHint').textContent = 'Pegá el link y probamos traer título y precio automáticamente.';
             document.getElementById('fetchHint').className = 'fetch-hint';
             document.activeElement.blur();
+
             toggleForm();
         }
 
@@ -563,6 +549,7 @@
         }
 
         function clearFilters() {
+            document.getElementById('filterStatus').value = '';
             document.getElementById('filterCategory').value = '';
             document.getElementById('filterShop').value = '';
             document.getElementById('searchInput').value = '';
@@ -596,68 +583,95 @@
             return all.filter(c => c.key !== item.currency.toLowerCase());
         }
 
-        /* --- Sincronización via GitHub Gist --- */
-        async function cloudUpload() {
-            const token = document.getElementById('ghToken').value.trim();
-            const gistId = document.getElementById('ghGistId').value.trim();
-            if(!token || !gistId) { alert('Completá Token y Gist ID para subir.'); return; }
-
-            localStorage.setItem('wishlist_gh_token', token);
-            localStorage.setItem('wishlist_gh_gist', gistId);
-
-            try {
-                const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-                    method: 'PATCH',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        files: { "wishlist_chile.json": { content: JSON.stringify(state, null, 2) } }
-                    })
-                });
-                if(res.ok) alert('Sincronizado con la nube correctamente.');
-                else alert('Error al subir. Revisá las credenciales.');
-            } catch(e) { alert('Fallo en la red.'); }
+        function forceSetupCredentials() {
+            const token = prompt("Ingresá tu GitHub Token (PAT):", localStorage.getItem('wishlist_gh_token') || '');
+            const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '');
+            if(token && gistId) {
+                localStorage.setItem('wishlist_gh_token', token.trim());
+                localStorage.setItem('wishlist_gh_gist', gistId.trim());
+                manualSync();
+            }
         }
 
-        async function cloudDownload() {
-            const token = document.getElementById('ghToken').value.trim();
-            const gistId = document.getElementById('ghGistId').value.trim();
-            if(!token || !gistId) { alert('Completá Token y Gist ID para bajar.'); return; }
+        function getSyncCredentials() {
+            return {
+                token: localStorage.getItem('wishlist_gh_token'),
+                gistId: localStorage.getItem('wishlist_gh_gist')
+            };
+        }
 
-            localStorage.setItem('wishlist_gh_token', token);
-            localStorage.setItem('wishlist_gh_gist', gistId);
+        async function autoPullFromCloud() {
+            const creds = getSyncCredentials();
+            if(!creds.token || !creds.gistId) return;
+
+            const syncBtn = document.getElementById('btnCloudSync');
+            if(syncBtn) syncBtn.classList.add('spinning');
 
             try {
-                const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-                    headers: { 'Authorization': `token ${token}` }
+                const res = await fetch(`https://api.github.com/gists/${creds.gistId}`, {
+                    headers: { 'Authorization': `token ${creds.token}` }
                 });
                 if(res.ok) {
                     const gistData = await res.json();
-                    const cloudContent = JSON.parse(gistData.files["wishlist_chile.json"].content);
-                    if(cloudContent && cloudContent.items) {
+                    const cloudContent = JSON.parse(gistData.files["wishlist.json"].content);
+                    if(cloudContent && Array.isArray(cloudContent.items)) {
                         state = cloudContent;
-                        save();
+                        localStorage.setItem('wishlist_pro_v6', JSON.stringify(state));
                         render();
-                        alert('Datos locales actualizados con la versión de la nube.');
                     }
-                } else alert('Error al descargar.');
-            } catch(e) { alert('Error de sincronización.'); }
+                }
+            } catch(e) {
+                console.log("Error pasivo al descargar:", e);
+            } finally {
+                if(syncBtn) syncBtn.classList.remove('spinning');
+            }
         }
 
-        function loadSyncCreds() {
-            document.getElementById('ghToken').value = localStorage.getItem('wishlist_gh_token') || '';
-            document.getElementById('ghGistId').value = localStorage.getItem('wishlist_gh_gist') || '';
+        async function autoPushToCloud() {
+            const creds = getSyncCredentials();
+            if(!creds.token || !creds.gistId) return;
+
+            const syncBtn = document.getElementById('btnCloudSync');
+            if(syncBtn) syncBtn.classList.add('spinning');
+
+            try {
+                await fetch(`https://api.github.com/gists/${creds.gistId}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        files: { "wishlist.json": { content: JSON.stringify(state, null, 2) } }
+                    })
+                });
+            } catch(e) {
+                console.log("Error pasivo al subir:", e);
+            } finally {
+                if(syncBtn) syncBtn.classList.remove('spinning');
+            }
+        }
+
+        async function manualSync() {
+            const creds = getSyncCredentials();
+            if(!creds.token || !creds.gistId) {
+                forceSetupCredentials();
+                return;
+            }
+            await autoPullFromCloud();
+            await autoPushToCloud();
         }
 
         function render() {
             renderRatesInfo();
             populateShopFilter();
 
+            const statusFilter = document.getElementById('filterStatus').value;
             const categoryFilter = document.getElementById('filterCategory').value;
             const shopFilter = document.getElementById('filterShop').value;
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
             const sortBy = document.getElementById('sortBy').value;
 
             let filteredItems = state.items.filter(item => {
+                if(statusFilter === 'pending' && item.bought) return false;
+                if(statusFilter === 'bought' && !item.bought) return false;
                 if(categoryFilter && item.category !== categoryFilter) return false;
                 if(shopFilter && item.shop !== shopFilter) return false;
                 if(searchTerm && !(item.title.toLowerCase().includes(searchTerm) || item.shop.toLowerCase().includes(searchTerm))) return false;
@@ -667,12 +681,16 @@
             if(sortBy === 'price_asc') filteredItems.sort((a, b) => usdValueOf(a) - usdValueOf(b));
             else if(sortBy === 'price_desc') filteredItems.sort((a, b) => usdValueOf(b) - usdValueOf(a));
 
-            document.getElementById('filterCount').textContent = (categoryFilter || shopFilter || searchTerm) ? `${filteredItems.length} de ${state.items.length} artículos` : '';
+            document.getElementById('filterCount').textContent = (statusFilter || categoryFilter || shopFilter || searchTerm) ? `${filteredItems.length} de ${state.items.length} artículos` : '';
 
-            let totalPendingUsd = 0, totalBoughtUsd = 0, pendingCount = 0, boughtCount = 0;
+            let totalPendingUsd = 0;
+            let totalBoughtUsd = 0;
+            let pendingCount = 0;
+            let boughtCount = 0;
+
             state.items.forEach(item => {
                 const val = usdValueOf(item);
-                if(item.bought) { totalBoughtUsd += val; boughtCount++; }
+                if(item.bought) { totalBoughtUsd += val; boughtCount++; } 
                 else { totalPendingUsd += val; pendingCount++; }
             });
 
@@ -696,7 +714,7 @@
             grid.innerHTML = '';
 
             if(state.items.length === 0 || filteredItems.length === 0) {
-                grid.innerHTML = `<div class="empty-state">${state.items.length === 0 ? 'No hay artículos todavía.' : 'Ningún artículo coincide con esta búsqueda o filtro.'}</div>`;
+                grid.innerHTML = `<div class="empty-state">No hay artículos para mostrar.</div>`;
                 return;
             }
 
@@ -708,7 +726,7 @@
                 if(item.currency === 'CLP') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-CL')}`;
                 if(item.currency === 'ARS') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-AR')}`;
                 if(item.currency === 'BRL') originalPriceFormatted = `R$${Number(item.price).toLocaleString('pt-BR')}`;
-                if(item.currency === 'USD') originalPriceFormatted = `U$S${Number(item.price)}`;
+                if(item.currency === 'USD') originalPriceFormatted = `U$S ${Number(item.price)}`;
 
                 const chips = otherCurrencies(item, usdValue).map(c => `
                     <div class="cur-chip ${c.cls}">
@@ -730,9 +748,9 @@
                         <span class="category-badge badge-${item.category}"><span class="dot"></span>${item.category}</span>
                     </div>
 
-                    <div class="card-meta">
-                        <span class="shop-info">${item.shop}</span>
-                        <span class="price-inline"><span class="origin-val">${originalPriceFormatted}</span><span class="origin-cur">${item.currency}</span></span>
+                    <div class="price-hero">
+                        <span><span class="origin-val">${originalPriceFormatted}</span><span class="origin-cur">${item.currency}</span></span>
+                        <span class="shop-info">📍 ${item.shop}</span>
                     </div>
 
                     <div class="other-currencies">${chips}</div>
@@ -748,12 +766,18 @@
             });
         }
 
-        window.onload = function() {
+        window.onload = async function() {
             render();
             fetchLiveRates();
-            loadSyncCreds();
+            await autoPullFromCloud();
             if(state.items.length === 0) toggleForm();
         };
+
+        document.addEventListener("visibilitychange", async () => {
+            if (!document.hidden) {
+                await autoPullFromCloud();
+            }
+        });
     </script>
 </body>
 </html>
