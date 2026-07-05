@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v7.2</title>
+    <title>Wishlist Maker v7.3</title>
     <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -53,7 +53,8 @@
         .section-label { font-size: 0.7rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.04em; margin: 1rem 0 0.4rem 0.2rem; }
         .section-label:first-of-type { margin-top: 0; }
 
-        .summary-bar { background: var(--surface); border-radius: 14px; padding: 0.8rem 1rem; margin-bottom: 0.45rem; display: flex; flex-direction: column; gap: 0.3rem; }
+        .summary-bar { background: var(--surface); border-radius: 14px; padding: 0.8rem 1rem; margin-bottom: 0.45rem; display: flex; flex-direction: column; gap: 0.3rem; transition: background-color 0.2s ease; }
+        .summary-bar.is-filtered { background: #1a233a; border: 1px solid rgba(0,122,255,0.3); }
         .summary-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .summary-row:not(:last-child) { border-bottom: 1px solid var(--separator); padding-bottom: 0.3rem; }
         .summary-bar .count { color: var(--label2); font-size: 0.82rem; font-weight: 500; }
@@ -73,13 +74,12 @@
         .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
         
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-        .converter-grid-inner { display: flex; flex-direction: column; gap: 0.5rem; }
         .converter-box { background: var(--surface); padding: 0.5rem 0.6rem; border-radius: 11px; display: flex; flex-direction: column; gap: 0.1rem; }
         
         .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
         .converter-box#boxClp { border-left: 3.5px solid var(--red); }
         .converter-box#boxBrl { border-left: 3.5px solid var(--brl-green); }
-        .converter-box#boxArs { border-left: 3.5px solid var(--accent); }
+        .converter-box#boxArs { border-left: 4px solid var(--accent); }
         
         .converter-box label { font-size: 0.65rem; color: var(--label2); font-weight: 600; }
         .converter-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
@@ -155,7 +155,6 @@
         .category-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.55rem; border-radius: 12px; font-size: 0.65rem; font-weight: 600; white-space: nowrap; text-transform: uppercase; }
         .category-badge .dot { width: 5px; height: 5px; border-radius: 50%; }
         
-        /* Estilos de Insignias de Categoría */
         .badge-ropa { background: rgba(10,132,255,0.15); color: #64b5ff; } .badge-ropa .dot { background: #64b5ff; }
         .badge-carteras { background: rgba(255,55,95,0.15); color: #ff7a9c; } .badge-carteras .dot { background: #ff7a9c; }
         .badge-accesorios { background: rgba(90,200,234,0.15); color: #7fd6ef; } .badge-accesorios .dot { background: #7fd6ef; }
@@ -732,6 +731,9 @@
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
             const sortBy = document.getElementById('sortBy').value;
 
+            // Determinar si hay algún tipo de filtrado en curso
+            const isAnyFilterActive = !!(statusFilter || categoryFilter || shopFilter || searchTerm);
+
             let filteredItems = state.items.filter(item => {
                 if(statusFilter === 'pending' && item.bought) return false;
                 if(statusFilter === 'bought' && !item.bought) return false;
@@ -744,30 +746,42 @@
             if(sortBy === 'price_asc') filteredItems.sort((a, b) => usdValueOf(a) - usdValueOf(b));
             else if(sortBy === 'price_desc') filteredItems.sort((a, b) => usdValueOf(b) - usdValueOf(a));
 
-            document.getElementById('filterCount').textContent = (statusFilter || categoryFilter || shopFilter || searchTerm) ? `${filteredItems.length} de ${state.items.length} artículos` : '';
+            document.getElementById('filterCount').textContent = isAnyFilterActive ? `${filteredItems.length} de ${state.items.length} artículos` : '';
+
+            // 🔥 LOGICA DE TOTALES DINAMICOS INTELIGENTES
+            // Si hay filtros, sumamos solo lo filtrado. Si no, sumamos todo el inventario.
+            const itemsToSum = isAnyFilterActive ? filteredItems : state.items;
 
             let totalPendingUsd = 0;
             let totalBoughtUsd = 0;
             let pendingCount = 0;
             let boughtCount = 0;
 
-            state.items.forEach(item => {
+            itemsToSum.forEach(item => {
                 const val = usdValueOf(item);
                 if(item.bought) { totalBoughtUsd += val; boughtCount++; } 
                 else { totalPendingUsd += val; pendingCount++; }
             });
 
             const summaryEl = document.getElementById('summaryBar');
+            
+            // Efecto visual: si está filtrado pintamos la barra sutilmente de azul iOS
+            if(isAnyFilterActive) {
+                summaryEl.classList.add('is-filtered');
+            } else {
+                summaryEl.classList.remove('is-filtered');
+            }
+
             if(state.items.length === 0) {
                 summaryEl.innerHTML = `<div class="summary-row"><span class="count">Todavía no agregaste nada</span></div>`;
             } else {
                 summaryEl.innerHTML = `
                     <div class="summary-row">
-                        <span class="count">Wishlist (${pendingCount} p.)</span>
+                        <span class="count">${isAnyFilterActive ? 'Filtrado' : 'Wishlist'} (${pendingCount} p.)</span>
                         <span class="total pending">U$S ${totalPendingUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div class="summary-row">
-                        <span class="count">Comprado (${boughtCount} c.)</span>
+                        <span class="count">${isAnyFilterActive ? 'Comprado (Filtrado)' : 'Comprado'} (${boughtCount} c.)</span>
                         <span class="total bought">U$S ${totalBoughtUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                 `;
