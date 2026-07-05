@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v7.0</title>
+    <title>Wishlist Maker v7.1</title>
     <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -63,7 +63,7 @@
 
         .converter-card { background: var(--surface2); border: 1px solid var(--surface3); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; gap: 0.5rem; }
-        .converter-header-title { display: flex; align-items: center; gap: 0.4rem; flex: 1; }
+        .converter-header-title { display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; }
         .converter-header .section-label { margin: 0; color: var(--label); font-weight: 700; white-space: nowrap; }
         .converter-header .compact-preview-box { background: var(--surface); padding: 0.3rem 0.5rem; border-radius: 7px; font-size: 0.74rem; color: var(--label2); font-weight: 600; border: 1px solid var(--separator); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
         
@@ -73,12 +73,13 @@
         .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
         
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .converter-grid-inner { display: flex; flex-direction: column; gap: 0.5rem; }
         .converter-box { background: var(--surface); padding: 0.5rem 0.6rem; border-radius: 11px; display: flex; flex-direction: column; gap: 0.1rem; }
         
         .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
         .converter-box#boxClp { border-left: 3.5px solid var(--red); }
         .converter-box#boxBrl { border-left: 3.5px solid var(--brl-green); }
-        .converter-box#boxArs { border-left: 4px solid var(--accent); }
+        .converter-box#boxArs { border-left: 3.5px solid var(--accent); }
         
         .converter-box label { font-size: 0.65rem; color: var(--label2); font-weight: 600; }
         .converter-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
@@ -134,6 +135,7 @@
         .settings-footer { margin-top: 2.5rem; text-align: center; }
         .btn-settings-link { background: transparent; border: none; color: var(--label3); font-size: 0.72rem; text-decoration: underline; cursor: pointer; }
 
+        /* FAB CSS Fix */
         .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1rem); right: 1rem; background: var(--accent); color: white; border: none; width: 50px; height: 48px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,122,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; }
         .fab .icon { width: 22px; height: 22px; stroke: white; stroke-width: 2; }
         .fab.hidden { display: none; }
@@ -336,17 +338,15 @@
     </button>
 
     <script>
-        // Inicialización y migración controlada del perfil activo
         let currentUser = localStorage.getItem('wishlist_current_user');
         
-        // Función dedicada al Onboarding inicial de perfil
         function checkUserOnboarding() {
             if (!currentUser) {
                 let selection = prompt("¿Quién está usando la app?\nEscribí exactamente: Mariano o Bere");
                 if (selection && (selection.trim().toLowerCase() === 'mariano' || selection.trim().toLowerCase() === 'bere')) {
                     currentUser = selection.trim().toLowerCase() === 'mariano' ? 'Mariano' : 'Bere';
                 } else {
-                    currentUser = 'Mariano'; // Fallback seguro
+                    currentUser = 'Mariano';
                 }
                 localStorage.setItem('wishlist_current_user', currentUser);
             }
@@ -354,7 +354,6 @@
         
         checkUserOnboarding();
 
-        // Migración adaptativa para recuperar el JSON viejo de versiones previas si existe
         if (currentUser === 'Mariano' && !localStorage.getItem('wishlist_state_Mariano') && localStorage.getItem('wishlist_pro_v6')) {
             localStorage.setItem('wishlist_state_Mariano', localStorage.getItem('wishlist_pro_v6'));
         }
