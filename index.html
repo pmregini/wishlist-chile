@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v6.8</title>
+    <title>Wishlist Maker v7.0</title>
     <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -42,6 +42,12 @@
         h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
         .subtitle { color: var(--label2); font-size: 0.8rem; margin-top: 0.1rem; font-weight: 400; }
 
+        .top-controls { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem; }
+
+        .user-selector { background: var(--surface2); border-radius: 10px; padding: 2px; display: flex; border: 1px solid var(--surface3); }
+        .user-btn { background: transparent; border: none; color: var(--label2); padding: 0.35rem 0.65rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s, color 0.15s; }
+        .user-btn.active { background: var(--surface3); color: var(--label); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
         .icon { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
         .section-label { font-size: 0.7rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.04em; margin: 1rem 0 0.4rem 0.2rem; }
@@ -55,7 +61,6 @@
         .summary-bar .total.pending { color: var(--accent); }
         .summary-bar .total.bought { color: var(--green); }
 
-        /* Conversor Desplegable Arreglado */
         .converter-card { background: var(--surface2); border: 1px solid var(--surface3); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; gap: 0.5rem; }
         .converter-header-title { display: flex; align-items: center; gap: 0.4rem; flex: 1; }
@@ -73,7 +78,7 @@
         .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
         .converter-box#boxClp { border-left: 3.5px solid var(--red); }
         .converter-box#boxBrl { border-left: 3.5px solid var(--brl-green); }
-        .converter-box#boxArs { border-left: 3.5px solid var(--accent); }
+        .converter-box#boxArs { border-left: 4px solid var(--accent); }
         
         .converter-box label { font-size: 0.65rem; color: var(--label2); font-weight: 600; }
         .converter-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
@@ -82,7 +87,6 @@
         
         .converter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; font-size: 0.7rem; color: var(--label3); }
 
-        /* Formulario Abierto/Cerrado Resaltado */
         .form-card { background: var(--surface); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; border: 1px solid var(--separator); }
         .form-card.open { border-color: rgba(0,122,255,0.4); box-shadow: 0 0 10px rgba(0,122,255,0.15); }
         .form-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; }
@@ -109,8 +113,6 @@
         .fetch-hint { font-size: 0.7rem; color: var(--label3); margin-top: -0.1rem; line-height: 1.3; }
         .fetch-hint.error { color: var(--red); }
         .fetch-hint.success { color: var(--green); }
-        
-        /* Botón de Carga Principal Ultra Resaltado */
         .btn-add { background: var(--accent); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 12px; font-weight: 700; font-size: 0.92rem; margin-top: 0.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.45rem; box-shadow: 0 4px 10px rgba(0,122,255,0.3); }
         .btn-add:active { opacity: 0.85; }
 
@@ -126,7 +128,7 @@
         .btn-clear-filters .icon { width: 12px; height: 12px; }
         .filter-count { font-size: 0.72rem; color: var(--label3); margin-bottom: 0.5rem; padding: 0 0.15rem; min-height: 0.85rem; }
 
-        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: var(--purple); width: 38px; height: 30px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: var(--purple); width: 38px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
 
         .settings-footer { margin-top: 2.5rem; text-align: center; }
@@ -136,7 +138,6 @@
         .fab .icon { width: 22px; height: 22px; stroke: white; stroke-width: 2; }
         .fab.hidden { display: none; }
 
-        /* Módulos de artículos optimizados v6.8 */
         .grid { display: flex; flex-direction: column; gap: 0.5rem; }
         .card { background: var(--surface); border-radius: 15px; padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; position: relative; transition: opacity 0.22s ease; }
         .card.is-bought { opacity: 0.42; }
@@ -150,7 +151,6 @@
         .card-header-main { display: flex; gap: 0.6rem; align-items: center; flex: 1; min-width: 0; }
         .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Badges de Categoría Soft de Early Versions */
         .category-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.55rem; border-radius: 12px; font-size: 0.65rem; font-weight: 600; white-space: nowrap; text-transform: uppercase; }
         .category-badge .dot { width: 5px; height: 5px; border-radius: 50%; }
         .badge-ropa { background: rgba(10,132,255,0.15); color: #64b5ff; } .badge-ropa .dot { background: #64b5ff; }
@@ -159,13 +159,11 @@
         .badge-zapatillas { background: rgba(255,159,10,0.15); color: #ffb454; } .badge-zapatillas .dot { background: #ffb454; }
         .badge-electrónica { background: rgba(191,90,242,0.15); color: #d493f7; } .badge-electrónica .dot { background: #d493f7; }
 
-        /* Fusión en una sola línea de Tienda y Precio Principal */
         .price-hero { display: flex; align-items: baseline; justify-content: space-between; padding-left: calc(20px + 0.6rem); margin-top: -0.1rem; }
         .price-hero .origin-val { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; color: var(--label); }
         .price-hero .origin-cur { font-size: 0.68rem; color: var(--label3); font-weight: 600; margin-left: 0.15rem; }
         .shop-info { font-size: 0.78rem; color: var(--label2); font-weight: 500; background: var(--surface2); padding: 0.1rem 0.45rem; border-radius: 6px; }
 
-        /* Grilla de conversión compacta */
         .other-currencies { display: flex; gap: 0.4rem; padding-left: calc(20px + 0.6rem); }
         .cur-chip { flex: 1; background: var(--surface2); border-radius: 9px; padding: 0.35rem 0.5rem; display: flex; flex-direction: column; gap: 0.05rem; }
         .cur-chip .cur-chip-label { font-size: 0.58rem; color: var(--label3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
@@ -190,7 +188,13 @@
                 <h1>Wishlist Maker</h1>
                 <div class="subtitle">Multi-divisas con conversión a dólar blue</div>
             </div>
-            <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
+            <div class="top-controls">
+                <div class="user-selector">
+                    <button class="user-btn" id="btnUser1" onclick="switchUser('Mariano')">Mariano</button>
+                    <button class="user-btn" id="btnUser2" onclick="switchUser('Bere')">Bere</button>
+                </div>
+                <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
+            </div>
         </header>
 
         <div class="summary-bar" id="summaryBar"></div>
@@ -332,15 +336,58 @@
     </button>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('wishlist_pro_v6')) || {
+        // Inicialización y migración controlada del perfil activo
+        let currentUser = localStorage.getItem('wishlist_current_user');
+        
+        // Función dedicada al Onboarding inicial de perfil
+        function checkUserOnboarding() {
+            if (!currentUser) {
+                let selection = prompt("¿Quién está usando la app?\nEscribí exactamente: Mariano o Bere");
+                if (selection && (selection.trim().toLowerCase() === 'mariano' || selection.trim().toLowerCase() === 'bere')) {
+                    currentUser = selection.trim().toLowerCase() === 'mariano' ? 'Mariano' : 'Bere';
+                } else {
+                    currentUser = 'Mariano'; // Fallback seguro
+                }
+                localStorage.setItem('wishlist_current_user', currentUser);
+            }
+        }
+        
+        checkUserOnboarding();
+
+        // Migración adaptativa para recuperar el JSON viejo de versiones previas si existe
+        if (currentUser === 'Mariano' && !localStorage.getItem('wishlist_state_Mariano') && localStorage.getItem('wishlist_pro_v6')) {
+            localStorage.setItem('wishlist_state_Mariano', localStorage.getItem('wishlist_pro_v6'));
+        }
+
+        let state = JSON.parse(localStorage.getItem(`wishlist_state_${currentUser}`)) || {
             rates: { clp: 950, ars: 1250, brl: 5.60 },
             ratesUpdatedAt: null,
             items: []
         };
 
         function save() {
-            localStorage.setItem('wishlist_pro_v6', JSON.stringify(state));
+            localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
             autoPushToCloud();
+        }
+
+        async function switchUser(user) {
+            currentUser = user;
+            localStorage.setItem('wishlist_current_user', currentUser);
+            
+            state = JSON.parse(localStorage.getItem(`wishlist_state_${currentUser}`)) || {
+                rates: state.rates, 
+                ratesUpdatedAt: state.ratesUpdatedAt,
+                items: []
+            };
+            
+            updateUserSelectorUI();
+            render();
+            await autoPullFromCloud();
+        }
+
+        function updateUserSelectorUI() {
+            document.getElementById('btnUser1').classList.toggle('active', currentUser === 'Mariano');
+            document.getElementById('btnUser2').classList.toggle('active', currentUser === 'Bere');
         }
 
         function toggleForm() {
@@ -607,17 +654,21 @@
             const syncBtn = document.getElementById('btnCloudSync');
             if(syncBtn) syncBtn.classList.add('spinning');
 
+            const fileName = `wishlist_${currentUser.toLowerCase()}.json`;
+
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     headers: { 'Authorization': `token ${creds.token}` }
                 });
                 if(res.ok) {
                     const gistData = await res.json();
-                    const cloudContent = JSON.parse(gistData.files["wishlist.json"].content);
-                    if(cloudContent && Array.isArray(cloudContent.items)) {
-                        state = cloudContent;
-                        localStorage.setItem('wishlist_pro_v6', JSON.stringify(state));
-                        render();
+                    if(gistData.files[fileName]) {
+                        const cloudContent = JSON.parse(gistData.files[fileName].content);
+                        if(cloudContent && Array.isArray(cloudContent.items)) {
+                            state = cloudContent;
+                            localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
+                            render();
+                        }
                     }
                 }
             } catch(e) {
@@ -634,13 +685,15 @@
             const syncBtn = document.getElementById('btnCloudSync');
             if(syncBtn) syncBtn.classList.add('spinning');
 
+            const fileName = `wishlist_${currentUser.toLowerCase()}.json`;
+            const filePayload = {};
+            filePayload[fileName] = { content: JSON.stringify(state, null, 2) };
+
             try {
                 await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
                     headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        files: { "wishlist.json": { content: JSON.stringify(state, null, 2) } }
-                    })
+                    body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
                 console.log("Error pasivo al subir:", e);
@@ -662,6 +715,7 @@
         function render() {
             renderRatesInfo();
             populateShopFilter();
+            updateUserSelectorUI();
 
             const statusFilter = document.getElementById('filterStatus').value;
             const categoryFilter = document.getElementById('filterCategory').value;
