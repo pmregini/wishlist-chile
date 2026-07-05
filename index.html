@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v7.1</title>
-    <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
+    <title>Wishlist Maker v7.2</title>
+    <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
@@ -135,7 +135,6 @@
         .settings-footer { margin-top: 2.5rem; text-align: center; }
         .btn-settings-link { background: transparent; border: none; color: var(--label3); font-size: 0.72rem; text-decoration: underline; cursor: pointer; }
 
-        /* FAB CSS Fix */
         .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1rem); right: 1rem; background: var(--accent); color: white; border: none; width: 50px; height: 48px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,122,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; }
         .fab .icon { width: 22px; height: 22px; stroke: white; stroke-width: 2; }
         .fab.hidden { display: none; }
@@ -155,11 +154,16 @@
         
         .category-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.55rem; border-radius: 12px; font-size: 0.65rem; font-weight: 600; white-space: nowrap; text-transform: uppercase; }
         .category-badge .dot { width: 5px; height: 5px; border-radius: 50%; }
+        
+        /* Estilos de Insignias de Categoría */
         .badge-ropa { background: rgba(10,132,255,0.15); color: #64b5ff; } .badge-ropa .dot { background: #64b5ff; }
         .badge-carteras { background: rgba(255,55,95,0.15); color: #ff7a9c; } .badge-carteras .dot { background: #ff7a9c; }
         .badge-accesorios { background: rgba(90,200,234,0.15); color: #7fd6ef; } .badge-accesorios .dot { background: #7fd6ef; }
         .badge-zapatillas { background: rgba(255,159,10,0.15); color: #ffb454; } .badge-zapatillas .dot { background: #ffb454; }
         .badge-electrónica { background: rgba(191,90,242,0.15); color: #d493f7; } .badge-electrónica .dot { background: #d493f7; }
+        .badge-mochilas { background: rgba(255,55,95,0.15); color: #ff7a9c; } .badge-mochilas .dot { background: #ff7a9c; }
+        .badge-valija { background: rgba(255,159,10,0.15); color: #ffb454; } .badge-valija .dot { background: #ffb454; }
+        .badge-perfume { background: rgba(90,200,234,0.15); color: #7fd6ef; } .badge-perfume .dot { background: #7fd6ef; }
 
         .price-hero { display: flex; align-items: baseline; justify-content: space-between; padding-left: calc(20px + 0.6rem); margin-top: -0.1rem; }
         .price-hero .origin-val { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; color: var(--label); }
@@ -279,6 +283,9 @@
                                 <option value="accesorios">Accesorios</option>
                                 <option value="zapatillas">Zapatillas</option>
                                 <option value="electrónica">Electrónica</option>
+                                <option value="mochilas">Mochilas</option>
+                                <option value="valija">Valija</option>
+                                <option value="perfume">Perfume</option>
                             </select>
                             <input type="text" id="shop" placeholder="Ej: H&M, Zara...">
                         </div>
@@ -310,6 +317,9 @@
                 <option value="accesorios">Accesorios</option>
                 <option value="zapatillas">Zapatillas</option>
                 <option value="electrónica">Electrónica</option>
+                <option value="mochilas">Mochilas</option>
+                <option value="valija">Valija</option>
+                <option value="perfume">Perfume</option>
             </select>
             <select id="filterShop" onchange="render()">
                 <option value="">Todas las tiendas</option>
