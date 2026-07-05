@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v6.4</title>
+    <title>Wishlist Maker v6.5</title>
     <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -115,9 +115,12 @@
         .btn-clear-filters .icon { width: 13px; height: 13px; }
         .filter-count { font-size: 0.75rem; color: var(--label3); margin-bottom: 0.7rem; padding: 0 0.2rem; min-height: 0.9rem; }
 
-        /* Botón Nube */
         .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: var(--purple); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
         .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
+
+        /* Botón de configuración sutil al pie de página */
+        .settings-footer { margin-top: 3rem; text-align: center; }
+        .btn-settings-link { background: transparent; border: none; color: var(--label3); font-size: 0.75rem; text-decoration: underline; cursor: pointer; }
 
         .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1.2rem); right: 1.2rem; background: var(--accent); color: white; border: none; width: 54px; height: 54px; border-radius: 50%; box-shadow: 0 6px 18px rgba(10,132,255,0.45); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; }
         .fab .icon { width: 24px; height: 24px; stroke: white; stroke-width: 2; }
@@ -166,7 +169,7 @@
                 <h1>Wishlist Maker</h1>
                 <div class="subtitle">Multi-divisas con conversión a dólar blue</div>
             </div>
-            <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Forzar Sincronización Manual">🔄</button>
+            <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
         </header>
 
         <div class="summary-bar" id="summaryBar"></div>
@@ -291,6 +294,10 @@
         <div class="filter-count" id="filterCount"></div>
 
         <div class="grid" id="inventoryGrid"></div>
+
+        <div class="settings-footer">
+            <button class="btn-settings-link" onclick="forceSetupCredentials()">⚙️ Reconfigurar credenciales de la nube</button>
+        </div>
     </div>
 
     <button class="fab" id="fabAdd" onclick="toggleForm()">
@@ -306,7 +313,7 @@
 
         function save() {
             localStorage.setItem('wishlist_pro_v6', JSON.stringify(state));
-            autoPushToCloud(); // Lanza subida automática tras mutar datos locales
+            autoPushToCloud();
         }
 
         function toggleForm() {
@@ -393,8 +400,6 @@
             if(headingMatch) return headingMatch[1].trim().slice(0, 120);
             try { return new URL(fallbackUrl).hostname.replace('www.', ''); } catch(e) { return ''; }
         }
-
-        document.UX_DISABLE_AUTO_FETCH = false;
 
         function extractPrice(text) {
             const patterns = [
@@ -495,6 +500,8 @@
             }
         }
 
+        UX_DISABLE_AUTO_FETCH = false;
+
         function toggleBought(index) {
             state.items[index].bought = !state.items[index].bought;
             save();
@@ -536,28 +543,30 @@
         }
 
         /* ========================================================
-           🔥 MOTOR AUTO-SYNC EN SEGUNDO PLANO (CLIENT-CLOUD ENGINE)
+           🔥 MOTOR PASIVO DE SINCRO SILENCIOSA (SILENT AUTO-SYNC)
            ======================================================== */
         
-        // Carga inicial y chequeo de credenciales silencioso
-        function checkSyncCredentials() {
-            let token = localStorage.getItem('wishlist_gh_token');
-            let gistId = localStorage.getItem('wishlist_gh_gist');
-            if(!token || !gistId) {
-                token = prompt("Configuración inicial obligatoria.\nIngresá tu GitHub Token (PAT):");
-                gistId = prompt("Ingresá tu Gist ID:");
-                if(token && gistId) {
-                    localStorage.setItem('wishlist_gh_token', token.trim());
-                    localStorage.setItem('wishlist_gh_gist', gistId.trim());
-                }
+        function forceSetupCredentials() {
+            const token = prompt("Ingresá tu GitHub Token (PAT):", localStorage.getItem('wishlist_gh_token') || '');
+            const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '');
+            if(token && gistId) {
+                localStorage.setItem('wishlist_gh_token', token.trim());
+                localStorage.setItem('wishlist_gh_gist', gistId.trim());
+                manualSync();
             }
-            return { token: localStorage.getItem('wishlist_gh_token'), gistId: localStorage.getItem('wishlist_gh_gist') };
         }
 
-        // AUTO-DOWNLOAD: Se ejecuta pasivamente al abrir la app o reactivar la pestaña
+        function getSyncCredentials() {
+            return {
+                token: localStorage.getItem('wishlist_gh_token'),
+                gistId: localStorage.getItem('wishlist_gh_gist')
+            };
+        }
+
+        // AUTO-DOWNLOAD SILENCIOSO: Sin carteles invasivos
         async function autoPullFromCloud() {
-            const creds = checkSyncCredentials();
-            if(!creds.token || !creds.gistId) return;
+            const creds = getSyncCredentials();
+            if(!creds.token || !creds.gistId) return; // Si no hay credenciales, trabaja local en silencio.
 
             const syncBtn = document.getElementById('btnCloudSync');
             if(syncBtn) syncBtn.classList.add('spinning');
@@ -569,7 +578,6 @@
                 if(res.ok) {
                     const gistData = await res.json();
                     const cloudContent = JSON.parse(gistData.files["wishlist.json"].content);
-                    // Comprobación de integridad del JSON antes de sobreescribir
                     if(cloudContent && Array.isArray(cloudContent.items)) {
                         state = cloudContent;
                         localStorage.setItem('wishlist_pro_v6', JSON.stringify(state));
@@ -577,15 +585,15 @@
                     }
                 }
             } catch(e) {
-                console.error("Fallo pasivo al descargar de la nube:", e);
+                console.log("Error silencioso de descarga pasiva (posible falta de red):", e);
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
         }
 
-        // AUTO-UPLOAD: Se dispara en segundo plano cada vez que se llama a save()
+        // AUTO-UPLOAD SILENCIOSO
         async function autoPushToCloud() {
-            const creds = checkSyncCredentials();
+            const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
 
             const syncBtn = document.getElementById('btnCloudSync');
@@ -600,17 +608,20 @@
                     })
                 });
             } catch(e) {
-                console.error("Fallo pasivo al respaldar en la nube:", e);
+                console.log("Error silencioso de subida pasiva:", e);
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
         }
 
-        // Forzar sincronización manual de doble vía con el click del botón
         async function manualSync() {
+            const creds = getSyncCredentials();
+            if(!creds.token || !creds.gistId) {
+                forceSetupCredentials();
+                return;
+            }
             await autoPullFromCloud();
             await autoPushToCloud();
-            alert("Sincronización bidireccional completada.");
         }
 
         function render() {
@@ -722,12 +733,10 @@
         window.onload = async function() {
             render();
             fetchLiveRates();
-            // Dispara pull en caliente al instanciar la ventana
             await autoPullFromCloud();
             if(state.items.length === 0) toggleForm();
         };
 
-        // Escucha nativa para iOS: si volvés a abrir Safari o cambiás de app, se auto-actualiza la lista
         document.addEventListener("visibilitychange", async () => {
             if (!document.hidden) {
                 await autoPullFromCloud();
