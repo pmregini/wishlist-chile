@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v7.8</title>
+    <title>Wishlist Maker v7.9</title>
     <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -112,6 +112,7 @@
         .link-row { display: flex; gap: 0.45rem; }
         .link-row input { flex: 1; }
         .btn-fetch { background: var(--surface2); border: none; color: var(--accent); font-weight: 600; padding: 0 0.9rem; border-radius: 10px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; }
+        .btn-fetch .icon { width: 14px; height: 14px; }
         .fetch-hint { font-size: 0.7rem; color: var(--label3); margin-top: -0.1rem; line-height: 1.3; }
         .fetch-hint.error { color: var(--red); }
         .fetch-hint.success { color: var(--green); }
@@ -160,7 +161,7 @@
         .shop-info { font-size: 0.78rem; color: var(--label2); font-weight: 500; background: var(--surface2); padding: 0.1rem 0.45rem; border-radius: 6px; }
 
         .other-currencies { display: flex; gap: 0.4rem; padding-left: calc(20px + 0.6rem); }
-        .cur-chip { flex: 1; background: var(--surface2); border-radius: 9px; padding: 0.35rem 0.5rem; display: flex; flex-direction: column; gap: 0.05rem; }
+        .cur-chip { flex: 1; background: var(--surface2); border-radius: 9px; padding: 0.35rem 0.55rem; display: flex; flex-direction: column; gap: 0.05rem; }
         .cur-chip .cur-chip-label { font-size: 0.58rem; color: var(--label3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
         .cur-chip .cur-chip-value { font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
         .cur-chip.is-usd .cur-chip-value { color: var(--green); }
@@ -519,7 +520,7 @@
         function detectCurrency(text, url) {
             if(url.includes('.cl') || /\bCLP\b/i.test(text)) return 'CLP';
             if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
-            if(url.includes('.com.ar') || /\bARS\b/i.test(text)) return 'ARS';
+            if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
             return 'CLP';
         }
 
@@ -703,16 +704,6 @@
             return all.filter(c => c.key !== item.currency.toLowerCase());
         }
 
-        function forceSetupCredentials() {
-            const token = prompt("Ingresá tu GitHub Token (PAT):", localStorage.getItem('wishlist_gh_token') || '');
-            const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
-            if(token && gistId) {
-                localStorage.setItem('wishlist_gh_token', token.trim());
-                localStorage.setItem('wishlist_gh_gist', gistId.trim());
-                manualSync();
-            }
-        }
-
         function getSyncCredentials() {
             let token = localStorage.getItem('wishlist_gh_token');
             let gistId = localStorage.getItem('wishlist_gh_gist');
@@ -723,7 +714,7 @@
             return { token, gistId };
         }
 
-        /* 📡 CAPA DE CONTROL DE RED TOTALMENTE SANITIZADA Y DETERMINÍSTICA v7.8 */
+        /* 📡 SECUENCIACIÓN CLOUD BLINDADA CONTRA SOBREESCRITURAS DE ARRANCADA v7.8 */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
@@ -735,11 +726,7 @@
 
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
-                    method: 'GET',
-                    headers: { 
-                        'Authorization': 'token ' + creds.token,
-                        'Accept': 'application/vnd.github+json'
-                    }
+                    headers: { 'Authorization': `token ${creds.token}` }
                 });
                 if(res.ok) {
                     const gistData = await res.json();
@@ -753,7 +740,7 @@
                     }
                 }
             } catch(e) {
-                console.log("Excepción atenuada de lectura remota.");
+                console.log("Error de lectura contenido.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -773,15 +760,11 @@
             try {
                 await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
-                    headers: { 
-                        'Authorization': 'token ' + creds.token, 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github+json'
-                    },
+                    headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
-                console.log("Excepción atenuada de escritura remota.");
+                console.log("Error de escritura contenido.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -793,9 +776,10 @@
                 forceSetupCredentials();
                 return;
             }
-            // Sincronización estrictamente secuencial para anular condiciones de carrera en Safari
+            // Secuenciación forzada de rescate: primero lee lo de la nube y luego escribe
             await autoPullFromCloud();
             await autoPushToCloud();
+            alert("🔄 Sincronización exitosa con la nube.");
         }
 
         function render() {
@@ -930,9 +914,9 @@
         window.onload = async function() {
             getSyncCredentials();
             render();
-            // Primero se resuelve la descarga de forma síncrona
+            // 1. Primero desacoplamos de forma atómica el JSON remoto
             await autoPullFromCloud();
-            // Después se buscan las tasas en paralelo sin colisionar el canal de red de GitHub
+            // 2. Solo cuando la memoria RAM está pisada con la verdad, actualizamos tasas sin romper nada
             fetchLiveRates();
             if(state.items.length === 0) toggleForm();
         };
