@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v7.6</title>
+    <title>Wishlist Maker v7.7</title>
     <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -75,6 +75,7 @@
         .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
         
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
         .converter-box { background: var(--surface); padding: 0.5rem 0.6rem; border-radius: 11px; display: flex; flex-direction: column; gap: 0.1rem; }
         
         .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
@@ -112,7 +113,6 @@
         .link-row { display: flex; gap: 0.45rem; }
         .link-row input { flex: 1; }
         .btn-fetch { background: var(--surface2); border: none; color: var(--accent); font-weight: 600; padding: 0 0.9rem; border-radius: 10px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; }
-        .btn-fetch [data-icon="refresh"] { animation: spin 1s linear infinite; }
         .fetch-hint { font-size: 0.7rem; color: var(--label3); margin-top: -0.1rem; line-height: 1.3; }
         .fetch-hint.error { color: var(--red); }
         .fetch-hint.success { color: var(--green); }
@@ -329,10 +329,6 @@
             <button class="btn-settings-link" onclick="forceSetupCredentials()">⚙️ Reconfigurar credenciales de la nube</button>
         </div>
     </div>
-
-    <button class="fab" id="fabAdd" onclick="toggleForm()">
-        <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
-    </button>
 
     <script>
         let currentUser = localStorage.getItem('wishlist_current_user');
@@ -724,7 +720,7 @@
             return { token, gistId };
         }
 
-        /* 📡 CAPA DE CONTROL DE RED INMUNIZADA CON TOKEN DIRECTO PARA EVITAR ERRORES CORS EN SAFARI v7.6 */
+        /* 📡 CAPA DE CONTROL DE RED INMUNIZADA ADAPTADA PARA ELIMINAR BLOQUEOS CORS EN SAFARI (v7.7) */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
@@ -736,7 +732,10 @@
 
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
-                    headers: { 'Authorization': `token ${creds.token}` }
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': 'token ' + creds.token
+                    }
                 });
                 if(res.ok) {
                     const gistData = await res.json();
@@ -750,7 +749,7 @@
                     }
                 }
             } catch(e) {
-                console.log("Error pasivo al descargar:", e);
+                console.log("Error de descarga asíncrona aislado en WebKit.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -770,11 +769,14 @@
             try {
                 await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
-                    headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Authorization': 'token ' + creds.token, 
+                        'Content-Type': 'application/json' 
+                    },
                     body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
-                console.log("Error pasivo al subir:", e);
+                console.log("Error de escritura asíncrona aislado en WebKit.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
