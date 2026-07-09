@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Chile v3.4</title>
-    <link rel="apple-touch-icon" href="https://fav.farm/🇨🇱">
+    <title>Wishlist Maker v7.6</title>
+    <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
@@ -18,8 +18,15 @@
             --label2: #98989d;
             --label3: #636366;
             --accent: #007aff;
+            --accent-dim: rgba(0,122,255,0.15);
             --green: #30d158;
+            --orange: #ff9f0a;
             --red: #ff453a;
+            --purple: #bf5af2;
+            --pink: #ff375f;
+            --teal: #5ac8ea;
+            --brl-green: #24b24b;
+            --whatsapp: #25d366;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         html { -webkit-font-smoothing: antialiased; }
@@ -29,37 +36,148 @@
             padding: calc(env(safe-area-inset-top) + 0.6rem) 0.8rem calc(env(safe-area-inset-bottom) + 5.5rem) 0.8rem;
             letter-spacing: -0.01em;
         }
+
         .container { max-width: 500px; margin: 0 auto; }
-        header { padding: 0.3rem 0.1rem 0.6rem 0.1rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
-        h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.35rem; }
-        .version-badge { font-size: 0.68rem; font-weight: 600; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; border-radius: 5px; border: 1px solid var(--surface3); }
+
+        header { padding: 0.3rem 0.1rem 0.9rem 0.1rem; display: flex; justify-content: space-between; align-items: flex-start; }
+        h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+        .subtitle { color: var(--label2); font-size: 0.8rem; margin-top: 0.1rem; font-weight: 400; }
+
+        .top-controls { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem; }
+
+        .user-selector { background: var(--surface2); border-radius: 10px; padding: 2px; display: flex; border: 1px solid var(--surface3); }
+        .user-btn { background: transparent; border: none; color: var(--label2); padding: 0.35rem 0.65rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s, color 0.15s; }
+        .user-btn.active { background: var(--surface3); color: var(--label); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+        .icon { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+        .section-label { font-size: 0.7rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.04em; margin: 1rem 0 0.4rem 0.2rem; }
+        .section-label:first-of-type { margin-top: 0; }
+
+        .summary-bar { background: var(--surface); border-radius: 14px; padding: 0.8rem 1rem; margin-bottom: 0.45rem; display: flex; flex-direction: column; gap: 0.3rem; transition: background-color 0.2s ease; }
+        .summary-bar.is-filtered { background: #1a233a; border: 1px solid rgba(0,122,255,0.3); }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .summary-row:not(:last-child) { border-bottom: 1px solid var(--separator); padding-bottom: 0.3rem; }
+        .summary-bar .count { color: var(--label2); font-size: 0.82rem; font-weight: 500; }
+        .summary-bar .total { font-weight: 700; font-size: 0.9rem; }
+        .summary-bar .total.pending { color: var(--accent); }
+        .summary-bar .total.bought { color: var(--green); }
+
+        .converter-card { background: var(--surface2); border: 1px solid var(--surface3); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; gap: 0.5rem; }
+        .converter-header-title { display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; }
+        .converter-header .section-label { margin: 0; color: var(--label); font-weight: 700; white-space: nowrap; }
+        .converter-header .compact-preview-box { background: var(--surface); padding: 0.3rem 0.5rem; border-radius: 7px; font-size: 0.74rem; color: var(--label2); font-weight: 600; border: 1px solid var(--separator); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
         
-        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: white; width: 36px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-        .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
-
-        .form-card { background: var(--surface); border-radius: 14px; margin-bottom: 0.8rem; overflow: hidden; border: 1px solid var(--separator); }
-        .form-body-inner { padding: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.2rem; }
-        .form-group label { font-size: 0.62rem; font-weight: 600; color: var(--label3); text-transform: uppercase; }
-        .form-group input, .form-group select { background: var(--surface2); border: none; padding: 0.6rem 0.7rem; border-radius: 8px; color: var(--label); font-size: 0.85rem; outline: none; }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0.75rem; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
-
-        .list-container { display: flex; flex-direction: column; gap: 0.4rem; }
-        .wish-item { background: var(--surface); border-radius: 12px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.02); }
-        .wish-main { display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex: 1; cursor: pointer; }
-        .wish-title { font-size: 0.92rem; font-weight: 600; word-break: break-word; }
-        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; border-radius: 4px; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
+        .converter-body { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
+        .converter-card.open .converter-body { max-height: 320px; }
+        .converter-card.open #chevronIndicator { transform: rotate(180deg); }
+        .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
         
-        .btn-check { background: transparent; border: 2px solid var(--label3); width: 18px; height: 18px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .btn-check svg { width: 10px; height: 10px; stroke: white; stroke-width: 3.5; fill: none; display: none; }
-        .wish-item.done { opacity: 0.4; }
-        .wish-item.done .btn-check { background: var(--green); border-color: var(--green); }
-        .wish-item.done .btn-check svg { display: block; }
-        .wish-item.done .wish-title { text-decoration: line-through; color: var(--label2); }
+        .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .converter-box { background: var(--surface); padding: 0.5rem 0.6rem; border-radius: 11px; display: flex; flex-direction: column; gap: 0.1rem; }
+        
+        .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
+        .converter-box#boxClp { border-left: 3.5px solid var(--red); }
+        .converter-box#boxBrl { border-left: 3.5px solid var(--brl-green); }
+        .converter-box#boxArs { border-left: 4px solid var(--accent); }
+        
+        .converter-box label { font-size: 0.65rem; color: var(--label2); font-weight: 600; }
+        .converter-box .input-group { display: flex; align-items: center; gap: 0.25rem; }
+        .converter-box .cur-sym { font-weight: 600; font-size: 0.85rem; color: var(--label2); }
+        .converter-box input { background: transparent; border: none; font-weight: 700; width: 100%; font-size: 1rem; outline: none; font-variant-numeric: tabular-nums; color: var(--label); }
+        
+        .converter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; font-size: 0.7rem; color: var(--label3); }
 
-        .btn-delete { background: transparent; border: none; color: var(--red); font-size: 0.75rem; cursor: pointer; text-decoration: underline; flex-shrink: 0; }
+        .form-card { background: var(--surface); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; border: 1px solid var(--separator); }
+        .form-card.open { border-color: rgba(0,122,255,0.4); box-shadow: 0 0 10px rgba(0,122,255,0.15); }
+        .form-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; }
+        .form-toggle-row .label { font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; color: var(--label); }
+        .form-toggle-row .label .icon { color: var(--accent); width: 18px; height: 19px; }
+        .form-card.open .chevron { transform: rotate(180deg); }
+        .form-body { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
+        .form-card.open .form-body { max-height: 950px; }
+        .form-body-inner { padding: 0.1rem 1rem 1rem 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.6rem; }
+        .field-label { font-size: 0.68rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.2rem; }
+        .field-label:first-child { margin-top: 0; }
+        
+        .form-group input, .form-group select { background: var(--surface2); border: none; padding: 0.7rem 0.8rem; border-radius: 10px; color: var(--label); font-size: 0.9rem; -webkit-appearance: none; outline: none; transition: opacity 0.2s ease, background-color 0.2s ease; }
+        .form-group input::placeholder { color: var(--label3); }
+        .form-group input.is-scraping { opacity: 0.5; background-color: var(--surface3); }
+        .form-group input.is-scraping::placeholder { color: var(--accent); font-weight: 500; }
+        
+        .form-group select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%2398989d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 8l4 4 4-4'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
+        .row-inputs { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0.55rem; }
+        .link-row { display: flex; gap: 0.45rem; }
+        .link-row input { flex: 1; }
+        .btn-fetch { background: var(--surface2); border: none; color: var(--accent); font-weight: 600; padding: 0 0.9rem; border-radius: 10px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; }
+        .btn-fetch [data-icon="refresh"] { animation: spin 1s linear infinite; }
+        .fetch-hint { font-size: 0.7rem; color: var(--label3); margin-top: -0.1rem; line-height: 1.3; }
+        .fetch-hint.error { color: var(--red); }
+        .fetch-hint.success { color: var(--green); }
+        .btn-add { background: var(--accent); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 12px; font-weight: 700; font-size: 0.92rem; margin-top: 0.4rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.45rem; box-shadow: 0 4px 10px rgba(0,122,255,0.3); }
+        .btn-add:active { opacity: 0.85; }
+
+        .search-bar { background: var(--surface); border-radius: 12px; padding: 0.6rem 0.8rem; margin-top: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.5rem; }
+        .search-bar .icon { color: var(--label3); width: 16px; height: 16px; flex-shrink: 0; }
+        .search-bar input { flex: 1; background: transparent; border: none; color: var(--label); font-size: 0.9rem; outline: none; }
+        .search-bar input::placeholder { color: var(--label3); }
+
+        .filters-row { display: flex; gap: 0.45rem; margin-bottom: 0.25rem; overflow-x: auto; padding-bottom: 0.1rem; scrollbar-width: none; }
+        .filters-row::-webkit-scrollbar { display: none; }
+        .filters-row select { background: var(--surface); border: none; color: var(--label); padding: 0.55rem 1.5rem 0.55rem 0.75rem; border-radius: 10px; font-size: 0.8rem; font-weight: 500; -webkit-appearance: none; outline: none; flex-shrink: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2398989d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M5 7l4 4 4-4'/></svg>"); background-repeat: no-repeat; background-position: right 5px center; }
+        .btn-clear-filters { background: var(--surface); border: none; color: var(--label2); font-size: 0.78rem; font-weight: 500; padding: 0.55rem 0.8rem; border-radius: 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 0.25rem; }
+        .btn-clear-filters .icon { width: 12px; height: 12px; }
+        .filter-count { font-size: 0.72rem; color: var(--label3); margin-bottom: 0.5rem; padding: 0 0.15rem; min-height: 0.85rem; }
+
+        .settings-footer { margin-top: 2.5rem; text-align: center; }
+        .btn-settings-link { background: transparent; border: none; color: var(--label3); font-size: 0.72rem; text-decoration: underline; cursor: pointer; }
+
+        .fab { position: fixed; bottom: calc(env(safe-area-inset-bottom) + 1rem); right: 1rem; background: var(--accent); color: white; border: none; width: 50px; height: 48px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,122,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; }
+        .fab .icon { width: 22px; height: 22px; stroke: white; stroke-width: 2; }
+        .fab.hidden { display: none; }
+
+        .grid { display: flex; flex-direction: column; gap: 0.5rem; }
+        .card { background: var(--surface); border-radius: 15px; padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; position: relative; transition: opacity 0.22s ease; }
+        .card.is-bought { opacity: 0.42; }
+        
+        .btn-check-ios { background: transparent; border: 2px solid var(--label3); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card.is-bought .btn-check-ios { background: var(--green); border-color: var(--green); }
+        .btn-check-ios .icon { width: 11px; height: 11px; stroke: white; stroke-width: 3.2; display: none; }
+        .card.is-bought .btn-check-ios .icon { display: block; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+        .card-header-main { display: flex; gap: 0.6rem; align-items: center; flex: 1; min-width: 0; }
+        .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .category-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.55rem; border-radius: 12px; font-size: 0.65rem; font-weight: 600; white-space: nowrap; text-transform: uppercase; border: none; cursor: pointer; transition: filter 0.15s; }
+        .category-badge:hover { filter: brightness(1.2); }
+        .category-badge .dot { width: 5px; height: 5px; border-radius: 50%; }
+
+        .price-hero { display: flex; align-items: baseline; justify-content: space-between; padding-left: calc(20px + 0.6rem); margin-top: -0.1rem; }
+        .price-hero .origin-val { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; color: var(--label); }
+        .price-hero .origin-cur { font-size: 0.68rem; color: var(--label3); font-weight: 600; margin-left: 0.15rem; }
+        .shop-info { font-size: 0.78rem; color: var(--label2); font-weight: 500; background: var(--surface2); padding: 0.1rem 0.45rem; border-radius: 6px; }
+
+        .other-currencies { display: flex; gap: 0.4rem; padding-left: calc(20px + 0.6rem); }
+        .cur-chip { flex: 1; background: var(--surface2); border-radius: 9px; padding: 0.35rem 0.5rem; display: flex; flex-direction: column; gap: 0.05rem; }
+        .cur-chip .cur-chip-label { font-size: 0.58rem; color: var(--label3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
+        .cur-chip .cur-chip-value { font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .cur-chip.is-usd .cur-chip-value { color: var(--green); }
+        .cur-chip.is-ars .cur-chip-value { color: var(--orange); }
+
+        .actions { display: flex; gap: 0.4rem; padding-left: calc(20px + 0.6rem); }
+        .btn-view { flex: 1; background: var(--surface2); border: none; color: var(--label); text-align: center; padding: 0.45rem; border-radius: 9px; text-decoration: none; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 0.3rem; }
+        .btn-view .icon { width: 12px; height: 12px; }
+        
+        .btn-whatsapp { background: rgba(37,211,102,0.12); border: none; color: var(--whatsapp); padding: 0.45rem 0.8rem; border-radius: 9px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-whatsapp:active { opacity: 0.7; }
+        .btn-whatsapp svg { width: 14px; height: 14px; fill: currentColor; }
+        
+        .btn-delete { background: rgba(255,69,58,0.1); border: none; color: var(--red); padding: 0.45rem 0.8rem; border-radius: 9px; display: flex; align-items: center; cursor: pointer; }
+
         .empty-state { text-align: center; color: var(--label3); padding: 3rem 1rem; font-size: 0.85rem; }
-        .settings-footer { margin-top: 3rem; padding-bottom: 1.5rem; text-align: center; font-size: 0.65rem; color: var(--label3); }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -67,47 +185,538 @@
     <div class="container">
         <header>
             <div>
-                <h1>Wishlist Chile <span class="version-badge">v3.4</span></h1>
-                <div class="subtitle">Lista de Deseos & Pendientes de Compra</div>
+                <h1>Wishlist Maker</h1>
+                <div class="subtitle">Multi-divisas con conversión a dólar blue</div>
             </div>
-            <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()">🔄</button>
+            <div class="top-controls">
+                <div class="user-selector">
+                    <button class="user-btn" id="btnUser1" onclick="switchUser('Mariano')">Mariano</button>
+                    <button class="user-btn" id="btnUser2" onclick="switchUser('Bere')">Bere</button>
+                </div>
+                <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
+            </div>
         </header>
 
-        <div class="form-card">
-            <div class="form-body-inner">
-                <div class="form-group">
-                    <label>Qué querés comprar / traer</label>
-                    <input type="text" id="fTitle" placeholder="Ej: Zapatillas, Abrigo, Tech...">
+        <div class="summary-bar" id="summaryBar"></div>
+
+        <div class="converter-card" id="converterCard">
+            <div class="converter-header" onclick="toggleConverter()">
+                <div class="converter-header-title">
+                    <span class="section-label">💱 Conversor rápido</span>
+                    <span class="compact-preview-box" id="converterPreview"></span>
                 </div>
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select id="fCategory">
-                        <option value="ropa">👕 Ropa / Calzado</option>
-                        <option value="tech">🔌 Tecnología</option>
-                        <option value="regalos">🎁 Regalos</option>
-                        <option value="otros">📌 Otros</option>
-                    </select>
+                <span id="chevronIndicator" style="font-size:0.7rem; color:var(--label3); transition: transform 0.25s ease;">▼</span>
+            </div>
+            <div class="converter-body">
+                <div class="converter-body-inner">
+                    <div class="converter-grid">
+                        <div class="converter-box" id="boxUsd">
+                            <label>USD</label>
+                            <div class="input-group"><span class="cur-sym">U$S</span><input type="number" id="convUsd" placeholder="Ingresar" oninput="convertFrom('usd', this.value)"></div>
+                        </div>
+                        <div class="converter-box" id="boxClp">
+                            <label>CLP</label>
+                            <div class="input-group"><span class="cur-sym">$</span><input type="number" id="convClp" placeholder="Ingresar" oninput="convertFrom('clp', this.value)"></div>
+                        </div>
+                        <div class="converter-box" id="boxBrl">
+                            <label>BRL</label>
+                            <div class="input-group"><span class="cur-sym">R$</span><input type="number" id="convBrl" placeholder="Ingresar" oninput="convertFrom('brl', this.value)"></div>
+                        </div>
+                        <div class="converter-box" id="boxArs">
+                            <label>ARS · Blue</label>
+                            <div class="input-group"><span class="cur-sym">$</span><input type="number" id="convArs" placeholder="Ingresar" oninput="convertFrom('ars', this.value)"></div>
+                        </div>
+                    </div>
+                    <div class="converter-footer">
+                        <span id="ratesInfo">Cargando tasas...</span>
+                        <button class="btn-icon" onclick="event.stopPropagation(); fetchLiveRates()" id="btnRefreshRates">
+                            <svg class="icon" viewBox="0 0 20 20"><path d="M16 5.5a6.5 6.5 0 1 0 1.5 5.5M16 5.5V2M16 5.5h-3.5"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <button class="btn-add" onclick="addItem()">Agregar a la Lista</button>
             </div>
         </div>
 
-        <div class="list-container" id="listContainer"></div>
+        <div class="form-card" id="formCard">
+            <div class="form-toggle-row" onclick="toggleForm()">
+                <span class="label">
+                    <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
+                    Agregar artículo
+                </span>
+                <span class="chevron" style="font-size:0.7rem; color:var(--label3); transition: transform 0.25s ease;">▼</span>
+            </div>
+            <div class="form-body">
+                <div class="form-body-inner">
+                    <div class="form-group">
+                        <span class="field-label">Link (opcional, habilita auto-carga)</span>
+                        <div class="link-row">
+                            <input type="url" id="link" placeholder="https://...">
+                            <button class="btn-fetch" id="btnFetch" onclick="fetchProductInfo()">Traer datos</button>
+                        </div>
+                        <div class="fetch-hint" id="fetchHint">Pegá el link y probamos traer título y precio automáticamente.</div>
+
+                        <span class="field-label">Producto</span>
+                        <input type="text" id="title" placeholder="Ej: Zapatillas Adidas Samba, Cartera...">
+
+                        <span class="field-label">Precio y moneda</span>
+                        <div class="row-inputs">
+                            <input type="number" id="price" placeholder="Monto sin puntos" pattern="[0-9]*">
+                            <select id="currency">
+                                <option value="CLP">CLP ($)</option>
+                                <option value="USD">USD (U$S)</option>
+                                <option value="ARS">ARS ($ Blue)</option>
+                                <option value="BRL">BRL (R$)</option>
+                            </select>
+                        </div>
+
+                        <span class="field-label">Categoría y tienda</span>
+                        <div class="row-inputs" style="grid-template-columns: 1fr 1fr;">
+                            <input type="text" id="category" list="categorySuggestions" placeholder="Ej: Ropa, Juguetes...">
+                            <datalist id="categorySuggestions">
+                                <option value="Ropa"></option>
+                                <option value="Carteras"></option>
+                                <option value="Accesorios"></option>
+                                <option value="Zapatillas"></option>
+                                <option value="Electrónica"></option>
+                                <option value="Mochilas"></option>
+                                <option value="Valija"></option>
+                                <option value="Perfume"></option>
+                            </datalist>
+                            <input type="text" id="shop" placeholder="Ej: H&M, Zara...">
+                        </div>
+
+                        <button class="btn-add" onclick="addItem()">
+                            <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
+                            Agregar a Wishlist
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <svg class="icon" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M16 16l-3.2-3.2"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar por producto o tienda" oninput="render()">
+        </div>
+
+        <div class="filters-row">
+            <select id="filterStatus" onchange="render()">
+                <option value="">Todos los estados</option>
+                <option value="pending">Solo Pendientes</option>
+                <option value="bought">Solo Comprados</option>
+            </select>
+            <select id="filterCategory" onchange="render()">
+                <option value="">Todas las categorías</option>
+            </select>
+            <select id="filterShop" onchange="render()">
+                <option value="">Todas las tiendas</option>
+            </select>
+            <select id="sortBy" onchange="render()">
+                <option value="recent">Más recientes</option>
+                <option value="price_asc">Precio: menor a mayor</option>
+                <option value="price_desc">Precio: mayor a menor</option>
+            </select>
+            <button class="btn-clear-filters" onclick="clearFilters()">
+                <svg class="icon" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></svg>
+                Limpiar
+            </button>
+        </div>
+        <div class="filter-count" id="filterCount"></div>
+
+        <div class="grid" id="inventoryGrid"></div>
 
         <div class="settings-footer">
-            <span>Wishlist Core v3.4 • 2026 • </span>
-            <span style="cursor: pointer; text-decoration: underline;" onclick="forceSetupCredentials()">Cloud Config</span>
+            <button class="btn-settings-link" onclick="forceSetupCredentials()">⚙️ Reconfigurar credenciales de la nube</button>
         </div>
     </div>
 
+    <button class="fab" id="fabAdd" onclick="toggleForm()">
+        <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
+    </button>
+
     <script>
-        let globalState = JSON.parse(localStorage.getItem('wishlist_chile_state')) || { items: [] };
-        let isSyncing = false;
+        let currentUser = localStorage.getItem('wishlist_current_user');
+        
+        function checkUserOnboarding() {
+            if (!currentUser) {
+                let selection = prompt("¿Quién está usando la app?\nEscribí exactamente: Mariano o Bere");
+                if (selection && (selection.trim().toLowerCase() === 'mariano' || selection.trim().toLowerCase() === 'bere')) {
+                    currentUser = selection.trim().toLowerCase() === 'mariano' ? 'Mariano' : 'Bere';
+                } else {
+                    currentUser = 'Mariano';
+                }
+                localStorage.setItem('wishlist_current_user', currentUser);
+            }
+        }
+        
+        checkUserOnboarding();
+
+        if (currentUser === 'Mariano' && !localStorage.getItem('wishlist_state_Mariano') && localStorage.getItem('wishlist_pro_v6')) {
+            localStorage.setItem('wishlist_state_Mariano', localStorage.getItem('wishlist_pro_v6'));
+        }
+
+        let state = JSON.parse(localStorage.getItem(`wishlist_state_${currentUser}`)) || {
+            rates: { clp: 950, ars: 1250, brl: 5.60 },
+            ratesUpdatedAt: null,
+            items: []
+        };
+
+        function getCategoryStyle(categoryName) {
+            const label = categoryName.trim().toLowerCase();
+            const colors = {
+                'ropa': { bg: 'rgba(10,132,255,0.15)', text: '#64b5ff', dot: '#64b5ff' },
+                'carteras': { bg: 'rgba(255,55,95,0.15)', text: '#ff7a9c', dot: '#ff7a9c' },
+                'accesorios': { bg: 'rgba(90,200,234,0.15)', text: '#7fd6ef', dot: '#7fd6ef' },
+                'zapatillas': { bg: 'rgba(255,159,10,0.15)', text: '#ffb454', dot: '#ffb454' },
+                'electrónica': { bg: 'rgba(191,90,242,0.15)', text: '#d493f7', dot: '#d493f7' },
+                'mochilas': { bg: 'rgba(255,55,95,0.15)', text: '#ff7a9c', dot: '#ff7a9c' },
+                'valija': { bg: 'rgba(255,159,10,0.15)', text: '#ffb454', dot: '#ffb454' },
+                'perfume': { bg: 'rgba(90,200,234,0.15)', text: '#7fd6ef', dot: '#7fd6ef' },
+                'juguetes': { bg: 'rgba(48,209,88,0.15)', text: '#72f18a', dot: '#72f18a' }
+            };
+
+            if (colors[label]) return colors[label];
+            
+            let hash = 0;
+            for (let i = 0; i < label.length; i++) hash = label.charCodeAt(i) + ((hash << 5) - hash);
+            const palettes = [
+                { bg: 'rgba(10,132,255,0.15)', text: '#64b5ff' },
+                { bg: 'rgba(255,55,95,0.15)', text: '#ff7a9c' },
+                { bg: 'rgba(90,200,234,0.15)', text: '#7fd6ef' },
+                { bg: 'rgba(255,159,10,0.15)', text: '#ffb454' },
+                { bg: 'rgba(191,90,242,0.15)', text: '#d493f7' },
+                { bg: 'rgba(48,209,88,0.15)', text: '#72f18a' }
+            ];
+            const chosen = palettes[Math.abs(hash) % palettes.length];
+            return { bg: chosen.bg, text: chosen.text, dot: chosen.text };
+        }
+
+        function save() {
+            localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
+            autoPushToCloud();
+        }
+
+        async function switchUser(user) {
+            currentUser = user;
+            localStorage.setItem('wishlist_current_user', currentUser);
+            
+            state = JSON.parse(localStorage.getItem(`wishlist_state_${currentUser}`)) || {
+                rates: state.rates, 
+                ratesUpdatedAt: state.ratesUpdatedAt,
+                items: []
+            };
+            
+            updateUserSelectorUI();
+            render();
+            await autoPullFromCloud();
+        }
+
+        function updateUserSelectorUI() {
+            document.getElementById('btnUser1').classList.toggle('active', currentUser === 'Mariano');
+            document.getElementById('btnUser2').classList.toggle('active', currentUser === 'Bere');
+        }
+
+        function toggleForm() {
+            const card = document.getElementById('formCard');
+            const opening = !card.classList.contains('open');
+            card.classList.toggle('open');
+            document.getElementById('fabAdd').classList.toggle('hidden', opening);
+            if(opening) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleConverter() {
+            document.getElementById('converterCard').classList.toggle('open');
+        }
+
+        function clearConverterExcept(exceptId) {
+            ['convClp', 'convArs', 'convBrl', 'convUsd'].forEach(id => {
+                if(id !== exceptId) document.getElementById(id).value = '';
+            });
+        }
+
+        function convertFrom(sourceCurrency, rawValue) {
+            const value = parseFloat(rawValue);
+            if(rawValue === '' || isNaN(value)) {
+                clearConverterExcept(null);
+                return;
+            }
+
+            let usdBase;
+            if(sourceCurrency === 'usd') usdBase = value;
+            else if(sourceCurrency === 'clp') usdBase = value / state.rates.clp;
+            else if(sourceCurrency === 'ars') usdBase = value / state.rates.ars;
+            else if(sourceCurrency === 'brl') usdBase = value / state.rates.brl;
+
+            if(sourceCurrency !== 'clp') document.getElementById('convClp').value = Math.round(usdBase * state.rates.clp);
+            if(sourceCurrency !== 'ars') document.getElementById('convArs').value = Math.round(usdBase * state.rates.ars);
+            if(sourceCurrency !== 'brl') document.getElementById('convBrl').value = (usdBase * state.rates.brl).toFixed(2);
+            if(sourceCurrency !== 'usd') document.getElementById('convUsd').value = usdBase.toFixed(2);
+        }
+
+        function renderRatesInfo() {
+            const el = document.getElementById('ratesInfo');
+            if(el) {
+                el.textContent = state.ratesUpdatedAt
+                    ? `Actualizado ${new Date(state.ratesUpdatedAt).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
+                    : 'Tasas manuales';
+            }
+            document.getElementById('converterPreview').textContent =
+                `${state.rates.clp} CLP - ${state.rates.ars} ARS - ${state.rates.brl} BRL`;
+        }
+
+        async function fetchLiveRates() {
+            const btn = document.getElementById('btnRefreshRates');
+            if(btn) btn.classList.add('spinning');
+            try {
+                const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                const fxData = await fxRes.json();
+                if(fxData && fxData.rates) {
+                    if(fxData.rates.CLP) state.rates.clp = Math.round(fxData.rates.CLP);
+                    if(fxData.rates.BRL) state.rates.brl = Math.round(fxData.rates.BRL * 100) / 100;
+                }
+
+                const blueRes = await fetch('https://dolarapi.com/v1/dolares/blue');
+                const blueData = await blueRes.json();
+                if(blueData && blueData.venta) state.rates.ars = blueData.venta;
+
+                state.ratesUpdatedAt = new Date().toISOString();
+                save();
+                clearConverterExcept(null);
+                renderRatesInfo();
+                render();
+            } catch(err) {
+                console.error(err);
+            } finally {
+                if(btn) btn.classList.remove('spinning');
+            }
+        }
+
+        function extractTitle(text, fallbackUrl) {
+            const titleLineMatch = text.match(/^Title:\s*(.+)$/mi);
+            if(titleLineMatch) return titleLineMatch[1].trim().slice(0, 120);
+            const headingMatch = text.match(/^#\s+(.+)$/m);
+            if(headingMatch) return headingMatch[1].trim().slice(0, 120);
+            try { return new URL(fallbackUrl).hostname.replace('www.', ''); } catch(e) { return ''; }
+        }
+
+        function extractPrice(text) {
+            const patterns = [
+                /(?:CLP|\$)\s?([\d]{1,3}(?:[.,]\d{3})+)(?!\d)/,
+                /(?:R\$)\s?([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/,
+                /(?:USD|U\$S|US\$)\s?([\d]{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/,
+                /\$\s?([\d]{1,3}(?:[.,]\d{2,3})*)/
+            ];
+            for(const p of patterns) {
+                const m = text.match(p);
+                if(m) {
+                    let raw = m[1].replace(/\./g, '').replace(',', '.');
+                    const val = parseFloat(raw);
+                    if(!isNaN(val) && val > 0) return val;
+                }
+            }
+            return null;
+        }
+
+        function detectCurrency(text, url) {
+            if(url.includes('.cl') || /\bCLP\b/i.test(text)) return 'CLP';
+            if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
+            if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
+            return 'CLP';
+        }
+
+        async function fetchProductInfo() {
+            const url = document.getElementById('link').value.trim();
+            const hint = document.getElementById('fetchHint');
+            const btn = document.getElementById('btnFetch');
+            const titleInput = document.getElementById('title');
+            const priceInput = document.getElementById('price');
+            
+            if(!url) return;
+
+            btn.classList.add('loading');
+            btn.textContent = '...';
+            hint.textContent = 'Consultando código de la tienda...';
+            hint.className = 'fetch-hint';
+            
+            titleInput.classList.add('is-scraping');
+            priceInput.classList.add('is-scraping');
+            titleInput.placeholder = '🔍 Buscando título en la web...';
+            priceInput.placeholder = '...';
+            titleInput.value = '';
+            priceInput.value = '';
+
+            try {
+                const proxyUrl = 'https://r.jina.ai/' + url;
+                const res = await fetch(proxyUrl);
+                const text = await res.text();
+
+                const title = extractTitle(text, url);
+                const price = extractPrice(text);
+                const currency = detectCurrency(text, url);
+
+                titleInput.placeholder = 'Ej: Zapatillas Adidas Samba, Cartera...';
+                priceInput.placeholder = 'Monto sin puntos';
+
+                if(title) titleInput.value = title;
+                if(price) priceInput.value = price;
+                document.getElementById('currency').value = currency;
+
+                try {
+                    const hostname = new URL(url).hostname.replace('www.', '').split('.')[0];
+                    document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
+                } catch(e) {}
+
+                hint.textContent = price ? 'Completado. Revisá antes de guardar.' : 'Datos parciales. Completá a mano.';
+                hint.className = 'fetch-hint success';
+            } catch(err) {
+                hint.textContent = 'Error de lectura. Cargá a mano.';
+                hint.className = 'fetch-hint error';
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Traer datos';
+                titleInput.classList.remove('is-scraping');
+                priceInput.classList.remove('is-scraping');
+            }
+        }
+
+        function addItem() {
+            const title = document.getElementById('title').value.trim();
+            const price = parseFloat(document.getElementById('price').value);
+            const currency = document.getElementById('currency').value;
+            let categoryRaw = document.getElementById('category').value.trim();
+            const category = categoryRaw ? categoryRaw.charAt(0).toUpperCase() + categoryRaw.slice(1).toLowerCase() : 'Varios';
+            const shop = document.getElementById('shop').value.trim() || 'Tienda';
+            const link = document.getElementById('link').value.trim();
+
+            if(!title || isNaN(price)) {
+                alert('Falta completar datos básicos del producto.');
+                return;
+            }
+
+            state.items.unshift({ title, price, currency, category, shop, link, bought: false, addedAt: Date.now() });
+            save();
+            render();
+
+            document.getElementById('title').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('shop').value = '';
+            document.getElementById('link').value = '';
+            document.getElementById('fetchHint').textContent = 'Pegá el link y probamos traer título y precio automáticamente.';
+            document.getElementById('fetchHint').className = 'fetch-hint';
+            document.activeElement.blur();
+
+            toggleForm();
+        }
+
+        function editCategory(index) {
+            const currentCat = state.items[index].category;
+            let newCat = prompt(`Editar categoría para "${state.items[index].title}":`, currentCat);
+            if (newCat !== null) {
+                newCat = newCat.trim();
+                state.items[index].category = newCat ? newCat.charAt(0).toUpperCase() + newCat.slice(1).toLowerCase() : 'Varios';
+                save();
+                render();
+            }
+        }
+
+        function shareWhatsApp(index) {
+            const item = state.items[index];
+            const usdValue = usdValueOf(item);
+            const arsBluePrice = Math.round(usdValue * state.rates.ars);
+
+            let originalPriceFormatted = '';
+            if(item.currency === 'CLP') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-CL')} CLP`;
+            if(item.currency === 'ARS') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-AR')} ARS`;
+            if(item.currency === 'BRL') originalPriceFormatted = `R$${Number(item.price).toLocaleString('pt-BR')} BRL`;
+            if(item.currency === 'USD') originalPriceFormatted = `U$S ${item.price}`;
+
+            let text = `🛍️ *Wishlist Maker* — _Compartido por ${currentUser}_\n\n`;
+            text += `*Producto:* ${item.title}\n`;
+            text += `*Tienda:* ${item.shop}\n`;
+            text += `*Precio:* ${originalPriceFormatted} (~ $${arsBluePrice.toLocaleString('es-AR')} ARS Blue)\n`;
+            
+            if(item.link) {
+                text += `\n🔗 *Link:* ${item.link}`;
+            }
+
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function deleteItem(index) {
+            if(confirm('¿Borrar este artículo?')) {
+                state.items.splice(index, 1);
+                save();
+                render();
+            }
+        }
+
+        function toggleBought(index) {
+            state.items[index].bought = !state.items[index].bought;
+            save();
+            render();
+        }
+
+        function clearFilters() {
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterShop').value = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortBy').value = 'recent';
+            render();
+        }
+
+        function populateCategoryFilter() {
+            const select = document.getElementById('filterCategory');
+            const currentVal = select.value;
+            const categories = [...new Set(state.items.map(i => i.category))].sort((a, b) => a.localeCompare(b));
+            select.innerHTML = '<option value="">Todas las categorías</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            if(categories.includes(currentVal)) select.value = currentVal;
+            
+            const datalist = document.getElementById('categorySuggestions');
+            datalist.innerHTML = categories.map(c => `<option value="${c}"></option>`).join('');
+        }
+
+        function populateShopFilter() {
+            const select = document.getElementById('filterShop');
+            const currentVal = select.value;
+            const shops = [...new Set(state.items.map(i => i.shop))].sort((a, b) => a.localeCompare(b));
+            select.innerHTML = '<option value="">Todas las tiendas</option>' + shops.map(s => `<option value="${s}">${s}</option>`).join('');
+            if(shops.includes(currentVal)) select.value = currentVal;
+        }
+
+        function usdValueOf(item) {
+            if(item.currency === 'USD') return item.price;
+            if(item.currency === 'CLP') return item.price / state.rates.clp;
+            if(item.currency === 'ARS') return item.price / state.rates.ars;
+            if(item.currency === 'BRL') return item.price / state.rates.brl;
+            return 0;
+        }
+
+        function otherCurrencies(item, usdBase) {
+            const all = [
+                { key: 'usd', label: 'USD', prefix: 'U$S', value: usdBase.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), cls: 'is-usd' },
+                { key: 'clp', label: 'CLP', prefix: '$', value: Math.round(usdBase * state.rates.clp).toLocaleString('es-CL'), cls: '' },
+                { key: 'ars', label: 'ARS Blue', prefix: '$', value: Math.round(usdBase * state.rates.ars).toLocaleString('es-AR'), cls: 'is-ars' },
+                { key: 'brl', label: 'BRL', prefix: 'R$', value: (usdBase * state.rates.brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), cls: '' }
+            ];
+            return all.filter(c => c.key !== item.currency.toLowerCase());
+        }
+
+        function forceSetupCredentials() {
+            const token = prompt("Ingresá tu GitHub Token (PAT):", localStorage.getItem('wishlist_gh_token') || '');
+            const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
+            if(token && gistId) {
+                localStorage.setItem('wishlist_gh_token', token.trim());
+                localStorage.setItem('wishlist_gh_gist', gistId.trim());
+                manualSync();
+            }
+        }
 
         function getSyncCredentials() {
             let token = localStorage.getItem('wishlist_gh_token');
             let gistId = localStorage.getItem('wishlist_gh_gist');
-            
             if (!gistId || gistId.trim() === '') {
                 gistId = '206145949f30bf9663b1f7ba2ed4573a';
                 localStorage.setItem('wishlist_gh_gist', gistId);
@@ -115,160 +724,207 @@
             return { token, gistId };
         }
 
-        async function save() {
-            localStorage.setItem('wishlist_chile_state', JSON.stringify(globalState));
-            render();
-            if (!isSyncing) {
-                await autoPushToCloud();
-            }
-        }
-
-        function addItem() {
-            const title = document.getElementById('fTitle').value.trim();
-            const category = document.getElementById('fCategory').value;
-
-            if (!title) {
-                alert("Por favor ingresá un nombre.");
-                return;
-            }
-
-            globalState.items.push({
-                id: 'w_' + Date.now(),
-                title,
-                category,
-                done: false
-            });
-
-            document.getElementById('fTitle').value = '';
-            save();
-        }
-
-        function toggleItem(id) {
-            const item = globalState.items.find(i => i.id === id);
-            if (item) {
-                item.done = !item.done;
-                save();
-            }
-        }
-
-        function deleteItem(id) {
-            if (confirm("¿Remover este deseo de la lista?")) {
-                globalState.items = globalState.items.filter(i => i.id !== id);
-                save();
-            }
-        }
-
-        function forceSetupCredentials() {
-            const token = prompt("Ingresá tu nuevo GitHub Token (PAT Classic con scope 'gist'):", localStorage.getItem('wishlist_gh_token') || '');
-            const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
-            if (token && gistId) {
-                localStorage.setItem('wishlist_gh_token', token.trim());
-                localStorage.setItem('wishlist_gh_gist', gistId.trim());
-                manualSync();
-            }
-        }
-
-        /* 📡 CAPA DE CONTROL DE RED ADAPTADA EXCLUSIVAMENTE CON EXTRACCIÓN DE CABECERAS PARA SAFARI v3.4 */
+        /* 📡 CAPA DE CONTROL DE RED INMUNIZADA CON TOKEN DIRECTO PARA EVITAR ERRORES CORS EN SAFARI v7.6 */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
-            if (!creds.token || !creds.gistId) return;
+            if(!creds.token || !creds.gistId) return;
+
             const syncBtn = document.getElementById('btnCloudSync');
-            if (syncBtn) syncBtn.classList.add('spinning');
-            
+            if(syncBtn) syncBtn.classList.add('spinning');
+
+            const fileName = `wishlist_${currentUser.toLowerCase()}.json`;
+
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
-                    method: 'GET',
-                    headers: { 
-                        'Authorization': `token ${creds.token}`
-                    }
+                    headers: { 'Authorization': `token ${creds.token}` }
                 });
-                if (res.ok) {
+                if(res.ok) {
                     const gistData = await res.json();
-                    if (gistData.files && gistData.files["wishlist_chile.json"]) {
-                        const cloudContent = JSON.parse(gistData.files["wishlist_chile.json"].content);
-                        if (cloudContent && Array.isArray(cloudContent.items)) {
-                            globalState = cloudContent;
-                            localStorage.setItem('wishlist_chile_state', JSON.stringify(globalState));
+                    if(gistData.files && gistData.files[fileName]) {
+                        const cloudContent = JSON.parse(gistData.files[fileName].content);
+                        if(cloudContent && Array.isArray(cloudContent.items)) {
+                            state = cloudContent;
+                            localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
                             render();
                         }
                     }
                 }
-            } catch (e) { 
-                console.log("Error de descarga asíncrona aislado.");
-            } finally { if (syncBtn) syncBtn.classList.remove('spinning'); }
+            } catch(e) {
+                console.log("Error pasivo al descargar:", e);
+            } finally {
+                if(syncBtn) syncBtn.classList.remove('spinning');
+            }
         }
 
         async function autoPushToCloud() {
             const creds = getSyncCredentials();
-            if (!creds.token || !creds.gistId) return;
-            isSyncing = true;
+            if(!creds.token || !creds.gistId) return;
+
             const syncBtn = document.getElementById('btnCloudSync');
-            if (syncBtn) syncBtn.classList.add('spinning');
-            
+            if(syncBtn) syncBtn.classList.add('spinning');
+
+            const fileName = `wishlist_${currentUser.toLowerCase()}.json`;
+            const filePayload = {};
+            filePayload[fileName] = { content: JSON.stringify(state, null, 2) };
+
             try {
                 await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
-                    headers: { 
-                        'Authorization': `token ${creds.token}`,
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify({
-                        files: { "wishlist_chile.json": { content: JSON.stringify(globalState, null, 2) } }
-                    })
+                    headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ files: filePayload })
                 });
-            } catch (e) { 
-                console.log("Error de escritura asíncrona aislado.");
-            } finally { 
-                isSyncing = false;
-                if (syncBtn) syncBtn.classList.remove('spinning'); 
+            } catch(e) {
+                console.log("Error pasivo al subir:", e);
+            } finally {
+                if(syncBtn) syncBtn.classList.remove('spinning');
             }
         }
 
         async function manualSync() {
             const creds = getSyncCredentials();
-            if (!creds.token || !creds.gistId) {
+            if(!creds.token || !creds.gistId) {
                 forceSetupCredentials();
                 return;
             }
-            try {
-                await autoPushToCloud();
-                await autoPullFromCloud();
-                alert("🔄 Sincronización de la lista de deseos completada.");
-            } catch (err) {
-                console.log("Sync Exception.");
-            }
+            await autoPullFromCloud();
+            await autoPushToCloud();
         }
 
         function render() {
-            const container = document.getElementById('listContainer');
-            container.innerHTML = '';
+            renderRatesInfo();
+            populateCategoryFilter();
+            populateShopFilter();
+            updateUserSelectorUI();
 
-            if (!globalState.items || globalState.items.length === 0) {
-                container.innerHTML = `<div class="empty-state">La lista de deseos está vacía.</div>`;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const shopFilter = document.getElementById('filterShop').value;
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            const sortBy = document.getElementById('sortBy').value;
+
+            const isAnyFilterActive = !!(statusFilter || categoryFilter || shopFilter || searchTerm);
+
+            let filteredItems = state.items.filter(item => {
+                if(statusFilter === 'pending' && item.bought) return false;
+                if(statusFilter === 'bought' && !item.bought) return false;
+                if(categoryFilter && item.category !== categoryFilter) return false;
+                if(shopFilter && item.shop !== shopFilter) return false;
+                if(searchTerm && !(item.title.toLowerCase().includes(searchTerm) || item.shop.toLowerCase().includes(searchTerm))) return false;
+                return true;
+            });
+
+            if(sortBy === 'price_asc') filteredItems.sort((a, b) => usdValueOf(a) - usdValueOf(b));
+            else if(sortBy === 'price_desc') filteredItems.sort((a, b) => usdValueOf(b) - usdValueOf(a));
+
+            document.getElementById('filterCount').textContent = isAnyFilterActive ? `${filteredItems.length} de ${state.items.length} artículos` : '';
+
+            const itemsToSum = isAnyFilterActive ? filteredItems : state.items;
+
+            let totalPendingUsd = 0;
+            let totalBoughtUsd = 0;
+            let pendingCount = 0;
+            let boughtCount = 0;
+
+            itemsToSum.forEach(item => {
+                const val = usdValueOf(item);
+                if(item.bought) { totalBoughtUsd += val; boughtCount++; } 
+                else { totalPendingUsd += val; pendingCount++; }
+            });
+
+            const summaryEl = document.getElementById('summaryBar');
+            if(isAnyFilterActive) summaryEl.classList.add('is-filtered');
+            else summaryEl.classList.remove('is-filtered');
+
+            if(state.items.length === 0) {
+                summaryEl.innerHTML = `<div class="summary-row"><span class="count">Todavía no agregaste nada</span></div>`;
+            } else {
+                summaryEl.innerHTML = `
+                    <div class="summary-row">
+                        <span class="count">
+                            ${isAnyFilterActive ? 'Filtrado (' + (categoryFilter || shopFilter || 'Búsqueda') + ')' : 'Wishlist'} (${pendingCount} p.)
+                        </span>
+                        <span class="total pending">U$S ${totalPendingUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="count">${isAnyFilterActive ? 'Comprado (Filtrado)' : 'Comprado'} (${boughtCount} c.)</span>
+                        <span class="total bought">U$S ${totalBoughtUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                `;
+            }
+
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+
+            if(state.items.length === 0 || filteredItems.length === 0) {
+                grid.innerHTML = `<div class="empty-state">No hay artículos para mostrar.</div>`;
                 return;
             }
 
-            globalState.items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = `wish-item ${item.done ? 'done' : ''}`;
-                card.innerHTML = `
-                    <div class="wish-main" onclick="toggleItem('${item.id}')">
-                        <button class="btn-check">
-                            <svg viewBox="0 0 10 10"><path d="M2 5l2 2 4-4" fill="none" stroke="white" stroke-width="2"/></svg>
-                        </button>
-                        <span class="wish-title">${item.title}</span>
-                        <span class="wish-category">${item.category}</span>
+            filteredItems.forEach((item) => {
+                const index = state.items.indexOf(item);
+                const usdValue = usdValueOf(item);
+
+                let originalPriceFormatted = '';
+                if(item.currency === 'CLP') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-CL')}`;
+                if(item.currency === 'ARS') originalPriceFormatted = `$${Number(item.price).toLocaleString('es-AR')}`;
+                if(item.currency === 'BRL') originalPriceFormatted = `R$${Number(item.price).toLocaleString('pt-BR')}`;
+                if(item.currency === 'USD') originalPriceFormatted = `U$S ${Number(item.price)}`;
+
+                const chips = otherCurrencies(item, usdValue).map(c => `
+                    <div class="cur-chip ${c.cls}">
+                        <span class="cur-chip-label">${c.label}</span>
+                        <span class="cur-chip-value">${c.prefix} ${c.value}</span>
                     </div>
-                    <button class="btn-delete" onclick="deleteItem('${item.id}')">Eliminar</button>
+                `).join('');
+
+                const styleObj = getCategoryStyle(item.category);
+
+                const card = document.createElement('div');
+                card.className = `card ${item.bought ? 'is-bought' : ''}`;
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-header-main">
+                            <button class="btn-check-ios" onclick="toggleBought(${index})" aria-label="Marcar como comprado">
+                                <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="white"><path d="M5 10l3 3 7-7"/></svg>
+                            </button>
+                            <div class="card-title">${item.title}</div>
+                        </div>
+                        <button class="category-badge" onclick="editCategory(${index})" style="background:${styleObj.bg}; color:${styleObj.text};">
+                            <span class="dot" style="background:${styleObj.dot};"></span>${item.category}
+                        </button>
+                    </div>
+
+                    <div class="price-hero">
+                        <span><span class="origin-val">${originalPriceFormatted}</span><span class="origin-cur">${item.currency}</span></span>
+                        <span class="shop-info">📍 ${item.shop}</span>
+                    </div>
+
+                    <div class="other-currencies">${chips}</div>
+
+                    <div class="actions">
+                        ${item.link ? `<a href="${item.link}" target="_blank" class="btn-view"><svg class="icon" viewBox="0 0 20 20"><path d="M8 5H5v10h10v-3M12 4h4v4M15.5 4.5L9 11"/></svg>Ver Link</a>` : ''}
+                        
+                        <button class="btn-whatsapp" onclick="shareWhatsApp(${index})" title="Compartir por WhatsApp">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.775-1.458L0 24zm6.135-2.614c1.644.975 3.535 1.489 5.82 1.49h.005c5.524 0 10.021-4.493 10.025-10.02.002-2.678-1.041-5.195-2.937-7.093C17.21 3.864 14.7 2.82 12.01 2.82c-5.529 0-10.026 4.495-10.03 10.023-.001 2.112.553 4.177 1.606 5.976l.1.171-1.007 3.676 3.757-.986.172.102zM17.5 14.77c-.3-.149-1.777-.878-2.077-.986-.3-.109-.52-.164-.738.15-.218.312-.843.878-1.034 1.1-.19.22-.38.247-.68.1-.3-.149-1.264-.465-2.408-1.486-.89-.794-1.49-1.774-1.665-2.074-.175-.3-.018-.463.13-.61.134-.133.3-.312.449-.469.15-.156.2-.267.3-.445.1-.178.05-.333-.025-.482-.075-.149-.738-1.778-.1-1.396-.254-.311-.534-.462-.738-.462h-.53c-.255 0-.668.096-.917.373-.25.277-1.007.984-1.007 2.397 0 1.413 1.027 2.778 1.17 2.964.143.187 2.021 3.086 4.898 4.315.685.293 1.22.468 1.637.6 1.408.448 1.72.385 2.062.32.325-.062 1.778-.727 2.028-1.428.25-.7.25-1.3.175-1.428-.075-.1-.275-.201-.575-.35z"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="btn-delete" onclick="deleteItem(${index})">
+                            <svg class="icon" viewBox="0 0 20 20"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/></svg>
+                        </button>
+                    </div>
                 `;
-                container.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
         window.onload = async function() {
             getSyncCredentials();
             render();
+            fetchLiveRates();
             await autoPullFromCloud();
+            if(state.items.length === 0) toggleForm();
         };
 
         document.addEventListener("visibilitychange", async () => {
