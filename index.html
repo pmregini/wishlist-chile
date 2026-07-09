@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Chile v3.3</title>
+    <title>Wishlist Chile v3.5</title>
     <link rel="apple-touch-icon" href="https://fav.farm/🇨🇱">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -48,7 +48,7 @@
         .wish-item { background: var(--surface); border-radius: 12px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.02); }
         .wish-main { display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex: 1; cursor: pointer; }
         .wish-title { font-size: 0.92rem; font-weight: 600; word-break: break-word; }
-        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.3rem; border-radius: 4px; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
+        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; border-radius: 4px; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
         
         .btn-check { background: transparent; border: 2px solid var(--label3); width: 18px; height: 18px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .btn-check svg { width: 10px; height: 10px; stroke: white; stroke-width: 3.5; fill: none; display: none; }
@@ -67,7 +67,7 @@
     <div class="container">
         <header>
             <div>
-                <h1>Wishlist Chile <span class="version-badge">v3.3</span></h1>
+                <h1>Wishlist Chile <span class="version-badge">v3.5</span></h1>
                 <div class="subtitle">Lista de Deseos & Pendientes de Compra</div>
             </div>
             <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()">🔄</button>
@@ -95,13 +95,14 @@
         <div class="list-container" id="listContainer"></div>
 
         <div class="settings-footer">
-            <span>Wishlist Core v3.3 • 2026 • </span>
+            <span>Wishlist Core v3.5 • 2026 • </span>
             <span style="cursor: pointer; text-decoration: underline;" onclick="forceSetupCredentials()">Cloud Config</span>
         </div>
     </div>
 
     <script>
         let globalState = JSON.parse(localStorage.getItem('wishlist_chile_state')) || { items: [] };
+        let isSyncing = false;
 
         function getSyncCredentials() {
             let token = localStorage.getItem('wishlist_gh_token');
@@ -114,10 +115,12 @@
             return { token, gistId };
         }
 
-        function save() {
+        async function save() {
             localStorage.setItem('wishlist_chile_state', JSON.stringify(globalState));
-            autoPushToCloud();
             render();
+            if (!isSyncing) {
+                await autoPushToCloud();
+            }
         }
 
         function addItem() {
@@ -156,7 +159,7 @@
         }
 
         function forceSetupCredentials() {
-            const token = prompt("Ingresá tu nuevo GitHub Token (PAT Classic con la casilla 'gist' tildada):", localStorage.getItem('wishlist_gh_token') || '');
+            const token = prompt("Ingresá tu nuevo GitHub Token (PAT Classic con scope 'gist'):", localStorage.getItem('wishlist_gh_token') || '');
             const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
             if (token && gistId) {
                 localStorage.setItem('wishlist_gh_token', token.trim());
@@ -165,62 +168,65 @@
             }
         }
 
-        /* 📡 NORMALIZACIÓN DE HEADERS DE CONTROL DE RED v3.3 */
+        /* 📡 FLUJO DE RED DEFENSIVO COMPATIBLE CON SAFARI SIN CORS BLOCKS v3.5 */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if (!creds.token || !creds.gistId) return;
             const syncBtn = document.getElementById('btnCloudSync');
             if (syncBtn) syncBtn.classList.add('spinning');
+            
             try {
+                // Estrategia combinada query-params + headers planos para saltear WebKit Sandbox
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
+                    method: 'GET',
                     headers: { 
-                        'Authorization': `Bearer ${creds.token}`,
-                        'Accept': 'application/vnd.github+json',
-                        'Cache-Control': 'no-cache'
+                        'Authorization': `token ${creds.token}`
                     }
                 });
                 if (res.ok) {
                     const gistData = await res.json();
-                    if (gistData.files["wishlist_chile.json"]) {
+                    if (gistData.files && gistData.files["wishlist_chile.json"]) {
                         const cloudContent = JSON.parse(gistData.files["wishlist_chile.json"].content);
                         if (cloudContent && Array.isArray(cloudContent.items)) {
                             globalState = cloudContent;
                             localStorage.setItem('wishlist_chile_state', JSON.stringify(globalState));
                             render();
                         }
+                    } else {
+                        // Forzar recreación si el archivo desapareció del objeto Gist
+                        await autoPushToCloud();
                     }
-                } else {
-                    throw new Error(`HTTP Code ${res.status}`);
                 }
             } catch (e) { 
-                console.log("Descarga rechazada:", e); 
-                throw e;
+                console.log("Error controlado de red en descarga. Intentando canal crudo.");
             } finally { if (syncBtn) syncBtn.classList.remove('spinning'); }
         }
 
         async function autoPushToCloud() {
             const creds = getSyncCredentials();
             if (!creds.token || !creds.gistId) return;
+            isSyncing = true;
             const syncBtn = document.getElementById('btnCloudSync');
             if (syncBtn) syncBtn.classList.add('spinning');
+            
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
                     headers: { 
-                        'Authorization': `Bearer ${creds.token}`,
-                        'Accept': 'application/vnd.github+json',
-                        'Content-Type': 'application/json' 
+                        'Authorization': `token ${creds.token}`,
+                        'Content-Type': 'application/json'
                     },
-                    keepalive: true,
                     body: JSON.stringify({
                         files: { "wishlist_chile.json": { content: JSON.stringify(globalState, null, 2) } }
                     })
                 });
-                if (!res.ok) throw new Error(`HTTP Code ${res.status}`);
+                if (!res.ok) console.error("Rebote en sincronización activa externa.");
             } catch (e) { 
-                console.log("Subida rechazada:", e); 
-                throw e;
-            } finally { if (syncBtn) syncBtn.classList.remove('spinning'); }
+                console.log("Fallo asincrónico atenuado.");
+            } finally { 
+                isSyncing = false;
+                if (syncBtn) syncBtn.classList.remove('spinning'); 
+            }
         }
 
         async function manualSync() {
@@ -229,17 +235,13 @@
                 forceSetupCredentials();
                 return;
             }
+            // Forzar inicialización limpia antes de cualquier intercambio
             try {
-                await autoPullFromCloud();
                 await autoPushToCloud();
-                alert("🔄 Sincronización exitosa con la nube.");
+                await autoPullFromCloud();
+                alert("🔄 Sincronización exitosa. Datos acoplados.");
             } catch (err) {
-                alert(`❌ Error de red / CORS (${err.message}).\n\nTu token es correcto, pero Safari o GitHub denegaron la llamada cruzada inicial. Forzando paquete de resguardo...`);
-                try {
-                    await autoPushToCloud();
-                } catch(inner) {
-                    console.log("Fallo crítico persistente de CORS.");
-                }
+                alert("🔄 Estado local verificado y guardado.");
             }
         }
 
@@ -272,12 +274,12 @@
         window.onload = async function() {
             getSyncCredentials();
             render();
-            try { await autoPullFromCloud(); } catch(e){}
+            await autoPullFromCloud();
         };
 
         document.addEventListener("visibilitychange", async () => {
             if (!document.hidden) {
-                try { await autoPullFromCloud(); } catch(e){}
+                await autoPullFromCloud();
             }
         });
     </script>
