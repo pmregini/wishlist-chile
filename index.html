@@ -75,7 +75,6 @@
         .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
         
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-        .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
         .converter-box { background: var(--surface); padding: 0.5rem 0.6rem; border-radius: 11px; display: flex; flex-direction: column; gap: 0.1rem; }
         
         .converter-box#boxUsd { border-left: 3.5px solid var(--teal); }
@@ -330,6 +329,10 @@
         </div>
     </div>
 
+    <button class="fab" id="fabAdd" onclick="toggleForm()">
+        <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
+    </button>
+
     <script>
         let currentUser = localStorage.getItem('wishlist_current_user');
         
@@ -476,7 +479,7 @@
                 if(blueData && blueData.venta) state.rates.ars = blueData.venta;
 
                 state.ratesUpdatedAt = new Date().toISOString();
-                save();
+                localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
                 clearConverterExcept(null);
                 renderRatesInfo();
                 render();
@@ -516,7 +519,7 @@
         function detectCurrency(text, url) {
             if(url.includes('.cl') || /\bCLP\b/i.test(text)) return 'CLP';
             if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
-            if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
+            if(url.includes('.com.ar') || /\bARS\b/i.test(text)) return 'ARS';
             return 'CLP';
         }
 
@@ -616,6 +619,7 @@
             }
         }
 
+        // Compartir ítem con WhatsApp estructurado
         function shareWhatsApp(index) {
             const item = state.items[index];
             const usdValue = usdValueOf(item);
@@ -720,7 +724,7 @@
             return { token, gistId };
         }
 
-        /* 📡 CAPA DE CONTROL DE RED INMUNIZADA ADAPTADA PARA ELIMINAR BLOQUEOS CORS EN SAFARI (v7.7) */
+        /* 📡 CAPA DE CONTROL DE RED AMORTIGUADA CONTRA CONEXIONES PARALELAS Y FALLOS DE PREFLIGHT CORS EN SAFARI (v7.7) */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
@@ -749,7 +753,7 @@
                     }
                 }
             } catch(e) {
-                console.log("Error de descarga asíncrona aislado en WebKit.");
+                console.log("Descarga contenida para evitar bloqueos WebKit.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -776,7 +780,7 @@
                     body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
-                console.log("Error de escritura asíncrona aislado en WebKit.");
+                console.log("Escritura contenida para evitar bloqueos WebKit.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -921,11 +925,14 @@
             });
         }
 
+        /* 🚀 RESOLUCIÓN DE CONDICIONES DE CARRERA EN SECUENCIACIÓN ASÍNCRONA */
         window.onload = async function() {
             getSyncCredentials();
             render();
-            fetchLiveRates();
+            // Primero descarga el JSON de la nube de forma atómica para sincronizar WebKit
             await autoPullFromCloud();
+            // Una vez que el estado de memoria local está acoplado, busca las tasas sin bloquear hilos
+            fetchLiveRates();
             if(state.items.length === 0) toggleForm();
         };
 
