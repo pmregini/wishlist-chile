@@ -112,6 +112,7 @@
         .link-row { display: flex; gap: 0.45rem; }
         .link-row input { flex: 1; }
         .btn-fetch { background: var(--surface2); border: none; color: var(--accent); font-weight: 600; padding: 0 0.9rem; border-radius: 10px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; }
+        .btn-fetch .icon { width: 14px; height: 14px; }
         .fetch-hint { font-size: 0.7rem; color: var(--label3); margin-top: -0.1rem; line-height: 1.3; }
         .fetch-hint.error { color: var(--red); }
         .fetch-hint.success { color: var(--green); }
@@ -171,6 +172,10 @@
 
         .empty-state { text-align: center; color: var(--label3); padding: 3rem 1rem; font-size: 0.85rem; }
         .settings-footer { margin-top: 2.5rem; text-align: center; padding-bottom: 1.5rem; }
+        
+        /* Corregido el truncamiento del padding malformado */
+        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
+        
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -513,7 +518,7 @@
         function detectCurrency(text, url) {
             if(url.includes('.cl') || /\bCLP\b/i.test(text)) return 'CLP';
             if(/\bR\$|BRL\b/i.test(text) || url.includes('.com.br')) return 'BRL';
-            if(url.includes('.com.ar') || /\bARS\b/i.test(text)) return 'ARS';
+            if(url.includes('.ar') || /\bARS\b/i.test(text)) return 'ARS';
             return 'CLP';
         }
 
@@ -697,6 +702,16 @@
             return all.filter(c => c.key !== item.currency.toLowerCase());
         }
 
+        function forceSetupCredentials() {
+            const token = prompt("Ingresá tu GitHub Token (PAT):", localStorage.getItem('wishlist_gh_token') || '');
+            const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
+            if(token && gistId) {
+                localStorage.setItem('wishlist_gh_token', token.trim());
+                localStorage.setItem('wishlist_gh_gist', gistId.trim());
+                manualSync();
+            }
+        }
+
         function getSyncCredentials() {
             let token = localStorage.getItem('wishlist_gh_token');
             let gistId = localStorage.getItem('wishlist_gh_gist');
@@ -707,7 +722,6 @@
             return { token, gistId };
         }
 
-        /* 📡 CORE DE CONFIGURACIÓN DE RED: MANTIENE EL PERMISO CLARO Y EVITA BLOQUEOS DE PREFLIGHT EN SAFARI */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
@@ -719,7 +733,7 @@
 
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
-                    headers: { 'Authorization': 'token ' + creds.token }
+                    headers: { 'Authorization': `token ${creds.token}` }
                 });
                 if(res.ok) {
                     const gistData = await res.json();
@@ -733,7 +747,7 @@
                     }
                 }
             } catch(e) {
-                console.log("Error pasivo de lectura de red.");
+                console.log("Error pasivo al descargar:", e);
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -753,11 +767,11 @@
             try {
                 await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
-                    headers: { 'Authorization': 'token ' + creds.token, 'Content-Type': 'application/json' },
+                    headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
-                console.log("Error pasivo de escritura de red.");
+                console.log("Error pasivo al subir:", e);
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -769,13 +783,13 @@
                 forceSetupCredentials();
                 return;
             }
-            // Secuenciación determinística estricta para forzar refresco
             await autoPullFromCloud();
             await autoPushToCloud();
             alert("🔄 Sincronización exitosa con la nube.");
         }
 
         function render() {
+            renderRatesInfo();
             populateCategoryFilter();
             populateShopFilter();
             updateUserSelectorUI();
@@ -903,13 +917,12 @@
             });
         }
 
-        /* 🚀 FLUJO DE INICIALIZACIÓN SECUENCIAL SIN CONDICIONES DE CARRERA */
         window.onload = async function() {
             getSyncCredentials();
             render();
-            // 1. Primero forzamos la descarga para pisar la caché local vieja
+            // 1. Forzamos descarga inicial secuencial asíncrona
             await autoPullFromCloud();
-            // 2. Solo después de que se acopló la verdad remota, actualizamos cotizaciones externas sin pisar el hilo de GitHub
+            // 2. Cargamos tasas externas
             fetchLiveRates();
             if(state.items.length === 0) toggleForm();
         };
