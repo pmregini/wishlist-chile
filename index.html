@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v8.1</title>
+    <title>Wishlist Maker v8.2</title>
     <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -388,7 +388,6 @@
             return palettes[Math.abs(hash) % palettes.length];
         }
 
-        /* 📡 GUARDA SECUENCIALMENTE ESPERANDO CONTEXTO ASÍNCRONO v8.1 */
         async function save() {
             state.updatedAt = Date.now(); 
             localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
@@ -712,12 +711,11 @@
             return { token, gistId };
         }
 
-        /* 📡 LOGICA DE RESOLUCIÓN DE VERSIÓN REFORMADA SANA v8.1 */
         async function autoPullFromCloud(isForcedManual = false) {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
 
-            const syncUser = currentUser; // Captura inmutable de contexto de hilo
+            const syncUser = currentUser; 
             const syncBtn = document.getElementById('btnCloudSync');
             if(syncBtn) syncBtn.classList.add('spinning');
 
@@ -733,10 +731,8 @@
                         const cloudContent = JSON.parse(gistData.files[fileName].content);
                         const cloudUpdatedAt = cloudContent.updatedAt || 0;
                         
-                        /* 🏎️ RESGUARDO CONTRA CONEXIONES TARDÍAS */
                         if (syncUser !== currentUser) return;
 
-                        /* 🛠️ COMPARACIÓN MATEMÁTICA PURA EXTIRPANDO EL AUTO-PISADO */
                         if (cloudUpdatedAt > state.updatedAt || isForcedManual) {
                             state = cloudContent;
                             localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
@@ -786,7 +782,6 @@
                 forceSetupCredentials();
                 return;
             }
-            // Ejecución atómica secuencial sin auto-bloqueos
             await autoPullFromCloud(true);
             await autoPushToCloud(true);
             alert("🔄 Sincronización exitosa con la nube.");
@@ -920,11 +915,15 @@
             });
         }
 
-        window.onload = async function() {
+        window.onload = function() {
             getSyncCredentials();
             render();
-            await autoPullFromCloud();
-            fetchLiveRates();
+            // 🚀 AISLAMIENTO ATÓMICO EN HILO NO BLOQUEANTE PARA FORZAR EL PULL DE ENTRADA
+            setTimeout(() => {
+                autoPullFromCloud().then(() => {
+                    fetchLiveRates();
+                });
+            }, 100);
             if(state.items.length === 0) toggleForm();
         };
     </script>
