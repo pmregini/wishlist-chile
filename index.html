@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Chile v3.2</title>
+    <title>Wishlist Chile v3.3</title>
     <link rel="apple-touch-icon" href="https://fav.farm/🇨🇱">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -34,7 +34,7 @@
         h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.35rem; }
         .version-badge { font-size: 0.68rem; font-weight: 600; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; border-radius: 5px; border: 1px solid var(--surface3); }
         
-        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: var(--purple); width: 36px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: white; width: 36px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
 
         .form-card { background: var(--surface); border-radius: 14px; margin-bottom: 0.8rem; overflow: hidden; border: 1px solid var(--separator); }
@@ -46,9 +46,9 @@
 
         .list-container { display: flex; flex-direction: column; gap: 0.4rem; }
         .wish-item { background: var(--surface); border-radius: 12px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.02); }
-        .wish-main { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
-        .wish-title { font-size: 0.92rem; font-weight: 600; }
-        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.3rem; border-radius: 4px; text-transform: uppercase; font-weight: 700; }
+        .wish-main { display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex: 1; cursor: pointer; }
+        .wish-title { font-size: 0.92rem; font-weight: 600; word-break: break-word; }
+        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.3rem; border-radius: 4px; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
         
         .btn-check { background: transparent; border: 2px solid var(--label3); width: 18px; height: 18px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .btn-check svg { width: 10px; height: 10px; stroke: white; stroke-width: 3.5; fill: none; display: none; }
@@ -57,7 +57,7 @@
         .wish-item.done .btn-check svg { display: block; }
         .wish-item.done .wish-title { text-decoration: line-through; color: var(--label2); }
 
-        .btn-delete { background: transparent; border: none; color: var(--red); font-size: 0.75rem; cursor: pointer; text-decoration: underline; }
+        .btn-delete { background: transparent; border: none; color: var(--red); font-size: 0.75rem; cursor: pointer; text-decoration: underline; flex-shrink: 0; }
         .empty-state { text-align: center; color: var(--label3); padding: 3rem 1rem; font-size: 0.85rem; }
         .settings-footer { margin-top: 3rem; padding-bottom: 1.5rem; text-align: center; font-size: 0.65rem; color: var(--label3); }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -67,7 +67,7 @@
     <div class="container">
         <header>
             <div>
-                <h1>Wishlist Chile <span class="version-badge">v3.2</span></h1>
+                <h1>Wishlist Chile <span class="version-badge">v3.3</span></h1>
                 <div class="subtitle">Lista de Deseos & Pendientes de Compra</div>
             </div>
             <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()">🔄</button>
@@ -95,7 +95,7 @@
         <div class="list-container" id="listContainer"></div>
 
         <div class="settings-footer">
-            <span>Wishlist Core v3.2 • 2026 • </span>
+            <span>Wishlist Core v3.3 • 2026 • </span>
             <span style="cursor: pointer; text-decoration: underline;" onclick="forceSetupCredentials()">Cloud Config</span>
         </div>
     </div>
@@ -156,7 +156,7 @@
         }
 
         function forceSetupCredentials() {
-            const token = prompt("Ingresá tu nuevo GitHub Token (PAT Classic con scope 'gist'):", localStorage.getItem('wishlist_gh_token') || '');
+            const token = prompt("Ingresá tu nuevo GitHub Token (PAT Classic con la casilla 'gist' tildada):", localStorage.getItem('wishlist_gh_token') || '');
             const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
             if (token && gistId) {
                 localStorage.setItem('wishlist_gh_token', token.trim());
@@ -165,6 +165,7 @@
             }
         }
 
+        /* 📡 NORMALIZACIÓN DE HEADERS DE CONTROL DE RED v3.3 */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if (!creds.token || !creds.gistId) return;
@@ -173,11 +174,10 @@
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
                     headers: { 
-                        'Authorization': `token ${creds.token}`,
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
-                    },
-                    cache: 'no-store'
+                        'Authorization': `Bearer ${creds.token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Cache-Control': 'no-cache'
+                    }
                 });
                 if (res.ok) {
                     const gistData = await res.json();
@@ -190,10 +190,10 @@
                         }
                     }
                 } else {
-                    throw new Error(`HTTP ${res.status}`);
+                    throw new Error(`HTTP Code ${res.status}`);
                 }
             } catch (e) { 
-                console.log("Descarga fallida:", e); 
+                console.log("Descarga rechazada:", e); 
                 throw e;
             } finally { if (syncBtn) syncBtn.classList.remove('spinning'); }
         }
@@ -206,15 +206,19 @@
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
-                    headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Authorization': `Bearer ${creds.token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json' 
+                    },
                     keepalive: true,
                     body: JSON.stringify({
                         files: { "wishlist_chile.json": { content: JSON.stringify(globalState, null, 2) } }
                     })
                 });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                if (!res.ok) throw new Error(`HTTP Code ${res.status}`);
             } catch (e) { 
-                console.log("Subida fallida:", e); 
+                console.log("Subida rechazada:", e); 
                 throw e;
             } finally { if (syncBtn) syncBtn.classList.remove('spinning'); }
         }
@@ -230,8 +234,12 @@
                 await autoPushToCloud();
                 alert("🔄 Sincronización exitosa con la nube.");
             } catch (err) {
-                alert(`❌ Falló la sincronización (${err.message}).\n\nTu token viejo fue destruido por GitHub por seguridad. Cargá tu nuevo token.`);
-                forceSetupCredentials();
+                alert(`❌ Error de red / CORS (${err.message}).\n\nTu token es correcto, pero Safari o GitHub denegaron la llamada cruzada inicial. Forzando paquete de resguardo...`);
+                try {
+                    await autoPushToCloud();
+                } catch(inner) {
+                    console.log("Fallo crítico persistente de CORS.");
+                }
             }
         }
 
@@ -239,7 +247,7 @@
             const container = document.getElementById('listContainer');
             container.innerHTML = '';
 
-            if (globalState.items.length === 0) {
+            if (!globalState.items || globalState.items.length === 0) {
                 container.innerHTML = `<div class="empty-state">La lista de deseos está vacía.</div>`;
                 return;
             }
