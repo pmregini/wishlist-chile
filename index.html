@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Global v3.6</title>
-    <link class="apple-touch-icon" href="https://fav.farm/🛍️">
+    <title>Wishlist Chile v3.4</title>
+    <link rel="apple-touch-icon" href="https://fav.farm/🇨🇱">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
@@ -19,8 +19,6 @@
             --label3: #636366;
             --accent: #007aff;
             --green: #30d158;
-            --pink: #ff2d55;
-            --orange: #ff9f0a;
             --red: #ff453a;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -31,9 +29,7 @@
             padding: calc(env(safe-area-inset-top) + 0.6rem) 0.8rem calc(env(safe-area-inset-bottom) + 5.5rem) 0.8rem;
             letter-spacing: -0.01em;
         }
-
         .container { max-width: 500px; margin: 0 auto; }
-
         header { padding: 0.3rem 0.1rem 0.6rem 0.1rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
         h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.35rem; }
         .version-badge { font-size: 0.68rem; font-weight: 600; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; border-radius: 5px; border: 1px solid var(--surface3); }
@@ -41,62 +37,29 @@
         .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: white; width: 36px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
 
-        .summary-bar { background: var(--surface); border-radius: 12px; padding: 0.6rem 0.9rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,122,255,0.15); }
-        .summary-bar label { font-size: 0.72rem; color: var(--label2); font-weight: 600; text-transform: uppercase; }
-        .summary-bar .value { font-size: 1.1rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-
-        .filter-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom: 0.5rem; }
-        .filter-select { background: var(--surface); border: 1px solid var(--surface3); color: var(--label); padding: 0.45rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; outline: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%2398989d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 5l4 4 4-4'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
-
-        .form-card { background: var(--surface); border-radius: 14px; margin-bottom: 0.5rem; overflow: hidden; border: 1px solid var(--separator); }
-        .form-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0.9rem; cursor: pointer; }
-        .form-toggle-row .label { font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem; }
-        .form-card.open .chevron { transform: rotate(180deg); }
-        .form-body { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
-        .form-card.open .form-body { max-height: 950px; }
-        .form-body-inner { padding: 0.1rem 0.9rem 0.9rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-card { background: var(--surface); border-radius: 14px; margin-bottom: 0.8rem; overflow: hidden; border: 1px solid var(--separator); }
+        .form-body-inner { padding: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.2rem; }
         .form-group label { font-size: 0.62rem; font-weight: 600; color: var(--label3); text-transform: uppercase; }
-        .form-group input, .form-group select, .form-group textarea { background: var(--surface2); border: none; padding: 0.6rem 0.7rem; border-radius: 8px; color: var(--label); font-size: 0.85rem; outline: none; }
-        .row-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0.75rem; border-radius: 10px; font-weight: 700; font-size: 0.88rem; margin-top: 0.2rem; cursor: pointer; }
+        .form-group input, .form-group select { background: var(--surface2); border: none; padding: 0.6rem 0.7rem; border-radius: 8px; color: var(--label); font-size: 0.85rem; outline: none; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 0.75rem; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
 
-        .section-label { font-size: 0.68rem; font-weight: 600; color: var(--label3); text-transform: uppercase; letter-spacing: 0.04em; margin: 1rem 0 0.4rem 0.1rem; }
-
-        .wish-list { display: flex; flex-direction: column; gap: 0.45rem; }
-        .wish-card { background: var(--surface); border-radius: 14px; padding: 0.75rem 0.85rem; display: flex; flex-direction: column; gap: 0.35rem; border: 1px solid rgba(255,255,255,0.02); relative: position; }
+        .list-container { display: flex; flex-direction: column; gap: 0.4rem; }
+        .wish-item { background: var(--surface); border-radius: 12px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.02); }
+        .wish-main { display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex: 1; cursor: pointer; }
+        .wish-title { font-size: 0.92rem; font-weight: 600; word-break: break-word; }
+        .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; border-radius: 4px; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
         
-        .priority-indicator { border-left: 3.5px solid var(--surface3); }
-        .priority-high { border-left-color: var(--red); }
-        .priority-medium { border-left-color: var(--orange); }
-        .priority-low { border-left-color: var(--accent); }
+        .btn-check { background: transparent; border: 2px solid var(--label3); width: 18px; height: 18px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .btn-check svg { width: 10px; height: 10px; stroke: white; stroke-width: 3.5; fill: none; display: none; }
+        .wish-item.done { opacity: 0.4; }
+        .wish-item.done .btn-check { background: var(--green); border-color: var(--green); }
+        .wish-item.done .btn-check svg { display: block; }
+        .wish-item.done .wish-title { text-decoration: line-through; color: var(--label2); }
 
-        .wish-card.bought { opacity: 0.45; }
-        .wish-card.bought .wish-title { text-decoration: line-through; color: var(--label2); }
-
-        .card-header-row { display: flex; align-items: flex-start; gap: 0.55rem; width: 100%; }
-        .btn-check { background: transparent; border: 2px solid var(--label3); width: 19px; height: 19px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-        .btn-check svg { width: 11px; height: 11px; stroke: white; stroke-width: 3.5; fill: none; display: none; }
-        .wish-card.bought .btn-check { background: var(--green); border-color: var(--green); }
-        .wish-card.bought .btn-check svg { display: block; }
-
-        .wish-main-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem; }
-        .wish-title { font-size: 0.92rem; font-weight: 600; line-height: 1.25; word-break: break-word; }
-        .wish-meta { font-size: 0.72rem; color: var(--label2); display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
-        .meta-store { color: var(--pink); font-weight: 600; }
-        .meta-priority { text-transform: uppercase; font-size: 0.6rem; font-weight: 700; padding: 0.05rem 0.25rem; border-radius: 4px; background: rgba(255,255,255,0.06); }
-
-        .wish-price { font-size: 0.92rem; font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; text-align: right; margin-left: auto; }
-
-        .wish-notes { background: var(--surface2); padding: 0.4rem 0.55rem; border-radius: 7px; color: var(--label2); font-size: 0.76rem; white-space: pre-wrap; line-height: 1.35; margin-top: 0.1rem; }
-
-        .card-actions { display: flex; justify-content: flex-end; gap: 0.55rem; border-top: 1px solid rgba(255,255,255,0.02); padding-top: 0.3rem; margin-top: 0.1rem; }
-        .btn-action-small { background: transparent; border: none; color: var(--label3); font-size: 0.68rem; font-weight: 500; cursor: pointer; text-decoration: underline; }
-        .btn-action-small.btn-link { color: var(--accent); font-weight: 600; text-decoration: none; background: rgba(0,122,255,0.1); padding: 0.1rem 0.4rem; border-radius: 4px; }
-        .btn-action-small.delete-trigger { color: var(--red); }
-
-        .settings-footer { margin-top: 2.5rem; padding-bottom: 1.5rem; text-align: center; font-size: 0.65rem; color: var(--label3); }
-        .empty-state { text-align: center; color: var(--label3); padding: 2.5rem 1rem; font-size: 0.82rem; }
+        .btn-delete { background: transparent; border: none; color: var(--red); font-size: 0.75rem; cursor: pointer; text-decoration: underline; flex-shrink: 0; }
+        .empty-state { text-align: center; color: var(--label3); padding: 3rem 1rem; font-size: 0.85rem; }
+        .settings-footer { margin-top: 3rem; padding-bottom: 1.5rem; text-align: center; font-size: 0.65rem; color: var(--label3); }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -104,98 +67,47 @@
     <div class="container">
         <header>
             <div>
-                <h1>Wishlist Global <span class="version-badge">v3.6</span></h1>
-                <div class="subtitle" style="font-size:0.8rem; color:var(--label2);">Compras & Presupuesto Unificado</div>
+                <h1>Wishlist Chile <span class="version-badge">v3.4</span></h1>
+                <div class="subtitle">Lista de Deseos & Pendientes de Compra</div>
             </div>
             <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()">🔄</button>
         </header>
 
-        <div class="summary-bar">
-            <div>
-                <label>Total Comprado / General</label>
-                <div class="value" id="valBudgetSummary">USD 0.00 / 0.00</div>
-            </div>
-        </div>
-
-        <div class="filter-bar">
-            <select class="filter-select" id="filterStore" onchange="render()">
-                <option value="all">🛍️ Todas las Tiendas</option>
-            </select>
-            <select class="filter-select" id="filterPriority" onchange="render()">
-                <option value="all">⚠️ Todas las Prioridades</option>
-                <option value="high">🔴 Alta</option>
-                <option value="medium">🟡 Media</option>
-                <option value="low">🔵 Baja</option>
-            </select>
-        </div>
-
-        <div class="form-card" id="formCard">
-            <div class="form-toggle-row" onclick="toggleForm()">
-                <span class="label">➕ Añadir deseo a la lista</span>
-                <span style="font-size:0.7rem; color:var(--label3);" id="chevronForm">▼</span>
-            </div>
-            <div class="form-body">
-                <div class="form-body-inner">
-                    <div class="form-group">
-                        <label>Producto / Nombre</label>
-                        <input type="text" id="fTitle" placeholder="Ej: Mac Studio M2 Max">
-                    </div>
-                    <div class="row-inputs">
-                        <div class="form-group">
-                            <label>Tienda / Origen</label>
-                            <input type="text" id="fStore" placeholder="Ej: Amazon, B&H, Apple">
-                        </div>
-                        <div class="form-group">
-                            <label>Precio Estimado (USD)</label>
-                            <input type="number" id="fPrice" placeholder="0.00" step="0.01">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Prioridad</label>
-                        <select id="fPriority">
-                            <option value="high">🔴 Alta (Indispensable)</option>
-                            <option value="medium" selected>🟡 Media (Gusto / Si se puede)</option>
-                            <option value="low">🔵 Baja (Opcional / Capricho)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>URL / Link de Compra (Opcional)</label>
-                        <input type="url" id="fUrl" placeholder="https://...">
-                    </div>
-                    <div class="form-group">
-                        <label>Notas / Detalles / Especificaciones</label>
-                        <textarea id="fNotes" rows="2" placeholder="Talle, color, specs técnicas..."></textarea>
-                    </div>
-                    <button class="btn-add" onclick="addWishItem()">Guardar en Wishlist</button>
+        <div class="form-card">
+            <div class="form-body-inner">
+                <div class="form-group">
+                    <label>Qué querés comprar / traer</label>
+                    <input type="text" id="fTitle" placeholder="Ej: Zapatillas, Abrigo, Tech...">
                 </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="fCategory">
+                        <option value="ropa">👕 Ropa / Calzado</option>
+                        <option value="tech">🔌 Tecnología</option>
+                        <option value="regalos">🎁 Regalos</option>
+                        <option value="otros">📌 Otros</option>
+                    </select>
+                </div>
+                <button class="btn-add" onclick="addItem()">Agregar a la Lista</button>
             </div>
         </div>
 
-        <div class="section-label">📋 Ítems en tu Radar</div>
-        <div class="wish-list" id="wishContainer"></div>
+        <div class="list-container" id="listContainer"></div>
 
         <div class="settings-footer">
-            <span>Wishlist Global v3.6 • 2026 • </span>
+            <span>Wishlist Core v3.4 • 2026 • </span>
             <span style="cursor: pointer; text-decoration: underline;" onclick="forceSetupCredentials()">Cloud Config</span>
         </div>
     </div>
 
     <script>
-        let globalState = JSON.parse(localStorage.getItem('wishlist_global_v3'));
-
-        if (!globalState) {
-            globalState = {
-                items: [
-                    { id: "w1", title: "Anker Prime 20K Power Bank", store: "Amazon", price: 129.99, priority: "high", url: "https://amazon.com", notes: "Modelo de 200W para cargar la MacBook Pro rápido en el avión.", bought: false },
-                    { id: "w2", title: "Steam Deck OLED 512GB", store: "B&H", price: 549.00, priority: "medium", url: "", notes: "Ver si hay refurbished oficial.", bought: true }
-                ]
-            };
-            localStorage.setItem('wishlist_global_v3', JSON.stringify(globalState));
-        }
+        let globalState = JSON.parse(localStorage.getItem('wishlist_chile_state')) || { items: [] };
+        let isSyncing = false;
 
         function getSyncCredentials() {
             let token = localStorage.getItem('wishlist_gh_token');
             let gistId = localStorage.getItem('wishlist_gh_gist');
+            
             if (!gistId || gistId.trim() === '') {
                 gistId = '206145949f30bf9663b1f7ba2ed4573a';
                 localStorage.setItem('wishlist_gh_gist', gistId);
@@ -203,219 +115,166 @@
             return { token, gistId };
         }
 
-        function save() {
-            localStorage.setItem('wishlist_global_v3', JSON.stringify(globalState));
-            autoPushToCloud();
+        async function save() {
+            localStorage.setItem('wishlist_chile_state', JSON.stringify(globalState));
             render();
+            if (!isSyncing) {
+                await autoPushToCloud();
+            }
         }
 
-        function toggleForm() {
-            const card = document.getElementById('formCard');
-            card.classList.toggle('open');
-            document.getElementById('chevronForm').textContent = card.classList.contains('open') ? '▲' : '▼';
-        }
-
-        function addWishItem() {
+        function addItem() {
             const title = document.getElementById('fTitle').value.trim();
-            const store = document.getElementById('fStore').value.trim() || "General";
-            const price = parseFloat(document.getElementById('fPrice').value) || 0;
-            const priority = document.getElementById('fPriority').value;
-            const url = document.getElementById('fUrl').value.trim();
-            const notes = document.getElementById('fNotes').value.trim();
+            const category = document.getElementById('fCategory').value;
 
             if (!title) {
-                alert("Por favor, ingresá al menos el nombre del producto.");
+                alert("Por favor ingresá un nombre.");
                 return;
             }
 
             globalState.items.push({
                 id: 'w_' + Date.now(),
-                title, store, price, priority, url, notes,
-                bought: false
+                title,
+                category,
+                done: false
             });
 
-            // Reset campos
             document.getElementById('fTitle').value = '';
-            document.getElementById('fStore').value = '';
-            document.getElementById('fPrice').value = '';
-            document.getElementById('fPriority').value = 'medium';
-            document.getElementById('fUrl').value = '';
-            document.getElementById('fNotes').value = '';
-
-            toggleForm();
             save();
         }
 
-        function toggleItemBought(id) {
+        function toggleItem(id) {
             const item = globalState.items.find(i => i.id === id);
-            if(item) {
-                item.bought = !item.bought;
+            if (item) {
+                item.done = !item.done;
                 save();
             }
         }
 
-        function deleteWishItem(id) {
-            if(confirm("¿Seguro que querés remover este ítem de tu wishlist?")) {
+        function deleteItem(id) {
+            if (confirm("¿Remover este deseo de la lista?")) {
                 globalState.items = globalState.items.filter(i => i.id !== id);
                 save();
             }
         }
 
-        function updateUniqueStoresDropdown() {
-            const select = document.getElementById('filterStore');
-            const currentSelected = select.value;
-            
-            const stores = new Set();
-            globalState.items.forEach(i => { if(i.store) stores.add(i.store.trim()); });
-            
-            let html = '<option value="all">🛍️ Todas las Tiendas</option>';
-            Array.from(stores).sort().forEach(store => {
-                html += `<option value="${store}">${store}</option>`;
-            });
-            select.innerHTML = html;
-            if(Array.from(stores).includes(currentSelected)) select.value = currentSelected;
-        }
-
         function forceSetupCredentials() {
-            const token = prompt("Ingresá tu GitHub Token:", localStorage.getItem('wishlist_gh_token') || '');
+            const token = prompt("Ingresá tu nuevo GitHub Token (PAT Classic con scope 'gist'):", localStorage.getItem('wishlist_gh_token') || '');
             const gistId = prompt("Ingresá tu Gist ID:", localStorage.getItem('wishlist_gh_gist') || '206145949f30bf9663b1f7ba2ed4573a');
-            if(token && gistId) {
+            if (token && gistId) {
                 localStorage.setItem('wishlist_gh_token', token.trim());
                 localStorage.setItem('wishlist_gh_gist', gistId.trim());
                 manualSync();
             }
         }
 
-        /* 📡 CAPA MIGRADA CONTRA ERRORES CORS EN SAFARI (WEBKIT BYPASS NATIVO) */
+        /* 📡 CAPA DE CONTROL DE RED ADAPTADA EXCLUSIVAMENTE CON EXTRACCIÓN DE CABECERAS PARA SAFARI v3.4 */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
-            if(!creds.token || !creds.gistId) return;
+            if (!creds.token || !creds.gistId) return;
             const syncBtn = document.getElementById('btnCloudSync');
-            if(syncBtn) syncBtn.classList.add('spinning');
+            if (syncBtn) syncBtn.classList.add('spinning');
+            
             try {
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
                     method: 'GET',
-                    headers: { 'Authorization': `token ${creds.token}` }
+                    headers: { 
+                        'Authorization': `token ${creds.token}`
+                    }
                 });
-                if(res.ok) {
+                if (res.ok) {
                     const gistData = await res.json();
-                    if(gistData.files && gistData.files["wishlist_items.json"]) {
-                        const cloudContent = JSON.parse(gistData.files["wishlist_items.json"].content);
-                        if(cloudContent && Array.isArray(cloudContent.items)) {
+                    if (gistData.files && gistData.files["wishlist_chile.json"]) {
+                        const cloudContent = JSON.parse(gistData.files["wishlist_chile.json"].content);
+                        if (cloudContent && Array.isArray(cloudContent.items)) {
                             globalState = cloudContent;
-                            localStorage.setItem('wishlist_global_v3', JSON.stringify(globalState));
+                            localStorage.setItem('wishlist_chile_state', JSON.stringify(globalState));
                             render();
                         }
                     }
                 }
-            } catch(e) { console.log("Descarga pasiva mitigada."); }
-            finally { if(syncBtn) syncBtn.classList.remove('spinning'); }
+            } catch (e) { 
+                console.log("Error de descarga asíncrona aislado.");
+            } finally { if (syncBtn) syncBtn.classList.remove('spinning'); }
         }
 
         async function autoPushToCloud() {
             const creds = getSyncCredentials();
-            if(!creds.token || !creds.gistId) return;
+            if (!creds.token || !creds.gistId) return;
+            isSyncing = true;
             const syncBtn = document.getElementById('btnCloudSync');
-            if(syncBtn) syncBtn.classList.add('spinning');
+            if (syncBtn) syncBtn.classList.add('spinning');
+            
             try {
                 await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
                     headers: { 
                         'Authorization': `token ${creds.token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json' 
                     },
                     body: JSON.stringify({
-                        files: { "wishlist_items.json": { content: JSON.stringify(globalState, null, 2) } }
+                        files: { "wishlist_chile.json": { content: JSON.stringify(globalState, null, 2) } }
                     })
                 });
-            } catch(e) { console.log("Push plano silenciado por WebKit CORS."); }
-            finally { if(syncBtn) syncBtn.classList.remove('spinning'); }
+            } catch (e) { 
+                console.log("Error de escritura asíncrona aislado.");
+            } finally { 
+                isSyncing = false;
+                if (syncBtn) syncBtn.classList.remove('spinning'); 
+            }
         }
 
         async function manualSync() {
             const creds = getSyncCredentials();
-            if(!creds.token || !creds.gistId) { forceSetupCredentials(); return; }
+            if (!creds.token || !creds.gistId) {
+                forceSetupCredentials();
+                return;
+            }
             try {
                 await autoPushToCloud();
                 await autoPullFromCloud();
-                alert("🔄 Sincronización de deseos completada.");
-            } catch(err) { alert("🔄 Cambios consolidados localmente."); }
+                alert("🔄 Sincronización de la lista de deseos completada.");
+            } catch (err) {
+                console.log("Sync Exception.");
+            }
         }
 
         function render() {
-            updateUniqueStoresDropdown();
-            
-            const storeFilter = document.getElementById('filterStore').value;
-            const priorityFilter = document.getElementById('filterPriority').value;
-            const container = document.getElementById('wishContainer');
-            
+            const container = document.getElementById('listContainer');
             container.innerHTML = '';
-            
-            let totalGeneral = 0;
-            let totalBought = 0;
-            let renderCount = 0;
 
-            // Ordenar por prioridad (Alta -> Media -> Baja) y luego por estado comprado
-            const sortedItems = [...globalState.items].sort((a,b) => {
-                if (a.bought !== b.bought) return a.bought ? 1 : -1;
-                const pMap = { high: 1, medium: 2, low: 3 };
-                return pMap[a.priority] - pMap[b.priority];
-            });
+            if (!globalState.items || globalState.items.length === 0) {
+                container.innerHTML = `<div class="empty-state">La lista de deseos está vacía.</div>`;
+                return;
+            }
 
-            sortedItems.forEach(item => {
-                totalGeneral += item.price;
-                if(item.bought) totalBought += item.price;
-
-                // Filtrado lógico
-                if(storeFilter !== 'all' && item.store !== storeFilter) return;
-                if(priorityFilter !== 'all' && item.priority !== priorityFilter) return;
-
-                renderCount++;
-
+            globalState.items.forEach(item => {
                 const card = document.createElement('div');
-                card.className = `wish-card priority-indicator priority-${item.priority} ${item.bought ? 'bought' : ''}`;
-                
-                const priorityLabels = { high: "🔴 Alta", medium: "🟡 Media", low: "🔵 Baja" };
-
+                card.className = `wish-item ${item.done ? 'done' : ''}`;
                 card.innerHTML = `
-                    <div class="card-header-row">
-                        <button class="btn-check" onclick="toggleItemBought('${item.id}')" title="Marcar comprado">
+                    <div class="wish-main" onclick="toggleItem('${item.id}')">
+                        <button class="btn-check">
                             <svg viewBox="0 0 10 10"><path d="M2 5l2 2 4-4" fill="none" stroke="white" stroke-width="2"/></svg>
                         </button>
-                        <div class="wish-main-info">
-                            <div class="wish-title">${item.title}</div>
-                            <div class="wish-meta">
-                                <span class="meta-store">🛍️ ${item.store}</span>
-                                <span class="meta-priority">${priorityLabels[item.priority] || item.priority}</span>
-                            </div>
-                        </div>
-                        <div class="wish-price">USD ${item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <span class="wish-title">${item.title}</span>
+                        <span class="wish-category">${item.category}</span>
                     </div>
-                    
-                    ${item.notes ? `<div class="wish-notes">${item.notes}</div>` : ''}
-
-                    <div class="card-actions">
-                        ${item.url ? `<a href="${item.url}" target="_blank" class="btn-action-small btn-link">🔗 Ir a la tienda</a>` : ''}
-                        <button class="btn-action-small delete-trigger" onclick="deleteWishItem('${item.id}')">Eliminar</button>
-                    </div>
+                    <button class="btn-delete" onclick="deleteItem('${item.id}')">Eliminar</button>
                 `;
                 container.appendChild(card);
             });
-
-            if(renderCount === 0) {
-                container.innerHTML = `<div class="empty-state">No hay deseos que coincidan con los filtros seleccionados.</div>`;
-            }
-
-            document.getElementById('valBudgetSummary').textContent = `USD ${totalBought.toLocaleString('en-US', { minimumFractionDigits: 2 })} / ${totalGeneral.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
         }
 
         window.onload = async function() {
+            getSyncCredentials();
             render();
             await autoPullFromCloud();
         };
 
         document.addEventListener("visibilitychange", async () => {
-            if (!document.hidden) { try { await autoPullFromCloud(); } catch(e){} }
+            if (!document.hidden) {
+                await autoPullFromCloud();
+            }
         });
     </script>
 </body>
