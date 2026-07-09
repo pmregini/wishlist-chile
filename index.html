@@ -64,14 +64,14 @@
         .summary-bar .total.bought { color: var(--green); }
 
         .converter-card { background: var(--surface2); border: 1px solid var(--surface3); border-radius: 16px; margin-bottom: 0.45rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .converter-card.open .converter-body { max-height: 320px; }
+        .converter-card.open #chevronIndicator { transform: rotate(180deg); }
         .converter-header { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; cursor: pointer; gap: 0.5rem; }
         .converter-header-title { display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; }
         .converter-header .section-label { margin: 0; color: var(--label); font-weight: 700; white-space: nowrap; }
         .converter-header .compact-preview-box { background: var(--surface); padding: 0.3rem 0.5rem; border-radius: 7px; font-size: 0.74rem; color: var(--label2); font-weight: 600; border: 1px solid var(--separator); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
         
         .converter-body { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
-        .converter-card.open .converter-body { max-height: 320px; }
-        .converter-card.open #chevronIndicator { transform: rotate(180deg); }
         .converter-body-inner { padding: 0.1rem 1rem 0.9rem 1rem; }
         
         .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
@@ -388,6 +388,7 @@
             return palettes[Math.abs(hash) % palettes.length];
         }
 
+        /* 📡 LOGICA ATOMICA OFFLINE-FIRST ASINCRO CON VERIFICACIÓN DE MARCA DE TIEMPO v8.2 */
         async function save() {
             state.updatedAt = Date.now(); 
             localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
@@ -711,6 +712,7 @@
             return { token, gistId };
         }
 
+        /* 📡 LOGICA DE RESOLUCIÓN POR COMPARACIÓN DE TIMESTAMP v8.2 */
         async function autoPullFromCloud(isForcedManual = false) {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
@@ -743,7 +745,7 @@
                     }
                 }
             } catch(e) {
-                console.log("Error controlado de descarga pasiva.");
+                console.log("Descarga contenida amortiguada.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -769,7 +771,7 @@
                     body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
-                console.log("Error controlado de escritura pasiva.");
+                console.log("Escritura contenida amortiguada.");
             } finally {
                 isSyncingLock = false;
                 if(syncBtn) syncBtn.classList.remove('spinning');
@@ -784,7 +786,7 @@
             }
             await autoPullFromCloud(true);
             await autoPushToCloud(true);
-            alert("🔄 Sincronización exitosa con la nube.");
+            alert("🛍️ Wishlist sincronizada con éxito.");
         }
 
         function render() {
@@ -918,7 +920,7 @@
         window.onload = function() {
             getSyncCredentials();
             render();
-            // 🚀 AISLAMIENTO ATÓMICO EN HILO NO BLOQUEANTE PARA FORZAR EL PULL DE ENTRADA
+            /* 🚀 SE PRE-CARGA EL REFRESH EN HILO SECUNDARIO PROTEGIENDO EL RENDER v8.2 */
             setTimeout(() => {
                 autoPullFromCloud().then(() => {
                     fetchLiveRates();
@@ -926,6 +928,13 @@
             }, 100);
             if(state.items.length === 0) toggleForm();
         };
+
+        /* 🛡️ RE-ACOPLAMIENTO DE DETECTOR INTELIGENTE DE FOCO CON DISPARO POR MARCA DE TIEMPO */
+        document.addEventListener("visibilitychange", async () => {
+            if (!document.hidden) {
+                await autoPullFromCloud();
+            }
+        });
     </script>
 </body>
 </html>
