@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wishlist Maker v7.7</title>
+    <title>Wishlist Maker v7.8</title>
     <link class="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -619,7 +619,6 @@
             }
         }
 
-        // Compartir ítem con WhatsApp estructurado
         function shareWhatsApp(index) {
             const item = state.items[index];
             const usdValue = usdValueOf(item);
@@ -724,7 +723,7 @@
             return { token, gistId };
         }
 
-        /* 📡 CAPA DE CONTROL DE RED AMORTIGUADA CONTRA CONEXIONES PARALELAS Y FALLOS DE PREFLIGHT CORS EN SAFARI (v7.7) */
+        /* 📡 CAPA DE CONTROL DE RED TOTALMENTE SANITIZADA Y DETERMINÍSTICA v7.8 */
         async function autoPullFromCloud() {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) return;
@@ -738,7 +737,8 @@
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
                     method: 'GET',
                     headers: { 
-                        'Authorization': 'token ' + creds.token
+                        'Authorization': 'token ' + creds.token,
+                        'Accept': 'application/vnd.github+json'
                     }
                 });
                 if(res.ok) {
@@ -753,7 +753,7 @@
                     }
                 }
             } catch(e) {
-                console.log("Descarga contenida para evitar bloqueos WebKit.");
+                console.log("Excepción atenuada de lectura remota.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -775,12 +775,13 @@
                     method: 'PATCH',
                     headers: { 
                         'Authorization': 'token ' + creds.token, 
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github+json'
                     },
                     body: JSON.stringify({ files: filePayload })
                 });
             } catch(e) {
-                console.log("Escritura contenida para evitar bloqueos WebKit.");
+                console.log("Excepción atenuada de escritura remota.");
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
             }
@@ -792,6 +793,7 @@
                 forceSetupCredentials();
                 return;
             }
+            // Sincronización estrictamente secuencial para anular condiciones de carrera en Safari
             await autoPullFromCloud();
             await autoPushToCloud();
         }
@@ -925,13 +927,12 @@
             });
         }
 
-        /* 🚀 RESOLUCIÓN DE CONDICIONES DE CARRERA EN SECUENCIACIÓN ASÍNCRONA */
         window.onload = async function() {
             getSyncCredentials();
             render();
-            // Primero descarga el JSON de la nube de forma atómica para sincronizar WebKit
+            // Primero se resuelve la descarga de forma síncrona
             await autoPullFromCloud();
-            // Una vez que el estado de memoria local está acoplado, busca las tasas sin bloquear hilos
+            // Después se buscan las tasas en paralelo sin colisionar el canal de red de GitHub
             fetchLiveRates();
             if(state.items.length === 0) toggleForm();
         };
