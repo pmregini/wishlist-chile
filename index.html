@@ -699,6 +699,26 @@
             return 'CLP';
         }
 
+        // El proxy r.jina.ai devuelve HTTP 200 aunque el sitio de destino lo haya bloqueado:
+        // el "contenido" en ese caso es la página de bloqueo/anti-bot, no el producto.
+        const BLOCKED_CONTENT_PATTERNS = [
+            /unable to (give|grant) you access/i,
+            /access (to (this|our) (site|page)|denied)/i,
+            /attention required/i,
+            /just a moment/i,
+            /verify you are (a )?human/i,
+            /checking your browser/i,
+            /forbidden/i,
+            /captcha/i,
+            /request unsuccessful/i,
+            /has been blocked/i
+        ];
+
+        function isBlockedContent(title, text) {
+            const sample = `${title || ''}\n${(text || '').slice(0, 600)}`;
+            return BLOCKED_CONTENT_PATTERNS.some(re => re.test(sample));
+        }
+
         async function fetchProductInfo() {
             const url = document.getElementById('link').value.trim();
             const hint = document.getElementById('fetchHint');
@@ -732,17 +752,28 @@
                 titleInput.placeholder = 'Ej: Zapatillas Adidas Samba, Cartera...';
                 priceInput.placeholder = 'Monto sin puntos';
 
-                if(title) titleInput.value = title;
-                if(price) priceInput.value = price;
-                document.getElementById('currency').value = currency;
+                if(isBlockedContent(title, text)) {
+                    // El sitio bloqueó el acceso automático (anti-bot / Cloudflare / 403).
+                    // No cargamos ese mensaje como si fuera el producto.
+                    try {
+                        const hostname = new URL(url).hostname.replace('www.', '').split('.')[0];
+                        document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
+                    } catch(e) {}
+                    hint.textContent = '🚫 Esta tienda bloquea la carga automática. Completá título y precio a mano.';
+                    hint.className = 'fetch-hint error';
+                } else {
+                    if(title) titleInput.value = title;
+                    if(price) priceInput.value = price;
+                    document.getElementById('currency').value = currency;
 
-                try {
-                    const hostname = new URL(url).hostname.replace('www.', '').split('.')[0];
-                    document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
-                } catch(e) {}
+                    try {
+                        const hostname = new URL(url).hostname.replace('www.', '').split('.')[0];
+                        document.getElementById('shop').value = hostname.charAt(0).toUpperCase() + hostname.slice(1);
+                    } catch(e) {}
 
-                hint.textContent = price ? 'Completado. Revisá antes de guardar.' : 'Datos parciales. Completá a mano.';
-                hint.className = 'fetch-hint success';
+                    hint.textContent = price ? 'Completado. Revisá antes de guardar.' : 'Datos parciales. Completá a mano.';
+                    hint.className = 'fetch-hint success';
+                }
             } catch(err) {
                 hint.textContent = 'Error de lectura. Cargá a mano.';
                 hint.className = 'fetch-hint error';
