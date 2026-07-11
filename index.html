@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Wishlist Maker v8.2</title>
-    <link class="apple-touch-icon" href="https://fav.farm/🛍️">
+    <link rel="apple-touch-icon" href="https://fav.farm/🛍️">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
@@ -168,12 +168,60 @@
         .btn-whatsapp svg { width: 14px; height: 14px; fill: currentColor; }
         
         .btn-delete { background: rgba(255,69,58,0.1); border: none; color: var(--red); padding: 0.45rem 0.8rem; border-radius: 9px; display: flex; align-items: center; cursor: pointer; }
+        .btn-edit-item { background: var(--surface2); border: none; color: var(--label2); padding: 0.45rem 0.8rem; border-radius: 9px; display: flex; align-items: center; cursor: pointer; }
 
         .empty-state { text-align: center; color: var(--label3); padding: 3rem 1rem; font-size: 0.85rem; }
         .settings-footer { margin-top: 2.5rem; text-align: center; padding-bottom: 1.5rem; }
         
         .wish-category { font-size: 0.65rem; color: var(--label3); background: var(--surface2); padding: 0.1rem 0.35rem; text-transform: uppercase; font-weight: 700; flex-shrink: 0; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- Botones que faltaban en la hoja de estilos original --- */
+        .btn-cloud-sync { background: var(--surface2); border: 1px solid var(--surface3); color: white; width: 36px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.2); flex-shrink: 0; }
+        .btn-cloud-sync.spinning { animation: spin 0.8s linear infinite; color: var(--green); }
+        .btn-icon { background: var(--surface3); border: none; color: var(--label2); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .btn-icon.spinning svg { animation: spin 0.8s linear infinite; }
+        .btn-settings-link { background: transparent; border: none; color: var(--label3); font-size: 0.72rem; text-decoration: underline; cursor: pointer; padding: 0.3rem; }
+
+        .fab { position: fixed; right: calc(env(safe-area-inset-right) + 1.1rem); bottom: calc(env(safe-area-inset-bottom) + 1.3rem); width: 54px; height: 54px; border-radius: 50%; background: var(--accent); color: white; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,122,255,0.45); cursor: pointer; z-index: 50; transition: transform 0.2s ease, opacity 0.2s ease; }
+        .fab .icon { width: 22px; height: 22px; stroke-width: 2.2; }
+        .fab:active { transform: scale(0.92); }
+        .fab.hidden { transform: scale(0.4); opacity: 0; pointer-events: none; }
+
+        /* --- Estado de sync (badge sobre el botón de nube) --- */
+        .cloud-sync-wrap { position: relative; }
+        .sync-dot { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg); background: var(--label3); transition: background 0.2s; }
+        .sync-dot.dot-synced { background: var(--green); }
+        .sync-dot.dot-pending { background: var(--orange); }
+        .sync-dot.dot-error { background: var(--red); }
+        .sync-dot.dot-nocreds { background: var(--label3); }
+
+        /* --- Toasts --- */
+        .toast-container { position: fixed; top: calc(env(safe-area-inset-top) + 0.6rem); left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 0.4rem; align-items: center; width: 100%; max-width: 460px; padding: 0 0.8rem; pointer-events: none; }
+        .toast { background: var(--surface2); border: 1px solid var(--surface3); color: var(--label); font-size: 0.8rem; font-weight: 600; padding: 0.55rem 0.85rem; border-radius: 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.35); opacity: 0; transform: translateY(-8px); transition: opacity 0.2s, transform 0.2s; max-width: 100%; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.toast-success { border-color: rgba(48,209,88,0.4); }
+        .toast.toast-error { border-color: rgba(255,69,58,0.4); }
+        .toast.toast-info { border-color: rgba(0,122,255,0.4); }
+
+        /* --- Modal de edición completa --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 900; display: none; align-items: flex-end; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal-sheet { background: var(--surface); width: 100%; max-width: 500px; border-radius: 18px 18px 0 0; max-height: 88vh; overflow-y: auto; padding: 0.9rem 0.9rem calc(env(safe-area-inset-bottom) + 1rem) 0.9rem; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+        .modal-header h2 { font-size: 1rem; font-weight: 700; }
+        .modal-close-btn { background: var(--surface2); border: none; color: var(--label2); width: 28px; height: 28px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; }
+        .modal-body { display: flex; flex-direction: column; gap: 0.5rem; }
+        .modal-actions { display: flex; gap: 0.5rem; margin-top: 0.3rem; }
+        .modal-actions .btn-add { flex: 1; }
+
+        /* --- Barra de uso de almacenamiento --- */
+        .storage-bar-wrap { margin-top: 1.2rem; padding: 0 0.1rem; font-size: 0.65rem; color: var(--label3); }
+        .storage-bar-track { background: var(--surface2); height: 5px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; }
+        .storage-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s, background 0.3s; }
+        .storage-bar-fill.warn { background: var(--orange); }
+        .storage-bar-fill.danger { background: var(--red); }
+        .backup-actions { display: flex; gap: 0.6rem; justify-content: center; margin-top: 0.6rem; flex-wrap: wrap; }
     </style>
 </head>
 <body>
@@ -188,9 +236,14 @@
                     <button class="user-btn" id="btnUser1" onclick="switchUser('Mariano')">Mariano</button>
                     <button class="user-btn" id="btnUser2" onclick="switchUser('Bere')">Bere</button>
                 </div>
-                <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
+                <div class="cloud-sync-wrap">
+                    <button class="btn-cloud-sync" id="btnCloudSync" onclick="manualSync()" title="Sincronizar Manualmente">🔄</button>
+                    <span class="sync-dot" id="syncDot" title="Estado de sincronización"></span>
+                </div>
             </div>
         </header>
+
+        <div class="toast-container" id="toastContainer"></div>
 
         <div class="summary-bar" id="summaryBar"></div>
 
@@ -322,12 +375,58 @@
 
         <div class="settings-footer">
             <button class="btn-settings-link" onclick="forceSetupCredentials()">⚙️ Reconfigurar credenciales de la nube</button>
+            <div class="backup-actions">
+                <button class="btn-settings-link" onclick="downloadBackup()">⬇️ Descargar backup (JSON)</button>
+                <button class="btn-settings-link" onclick="document.getElementById('fImportBackup').click()">⬆️ Restaurar backup</button>
+                <input type="file" id="fImportBackup" accept="application/json" style="display:none;" onchange="importBackup(this.files[0])">
+            </div>
+            <div class="storage-bar-wrap">
+                <span id="storageBarLabel">Uso de almacenamiento local: -</span>
+                <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarFill" style="width:0%;"></div></div>
+            </div>
         </div>
     </div>
 
     <button class="fab" id="fabAdd" onclick="toggleForm()">
         <svg class="icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
     </button>
+
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <h2>✏️ Editar artículo</h2>
+                <button class="modal-close-btn" onclick="closeEditModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <span class="field-label">Producto</span>
+                <input type="text" id="eTitle">
+
+                <span class="field-label">Precio y moneda</span>
+                <div class="row-inputs">
+                    <input type="number" id="ePrice">
+                    <select id="eCurrency">
+                        <option value="CLP">CLP ($)</option>
+                        <option value="USD">USD (U$S)</option>
+                        <option value="ARS">ARS ($ Blue)</option>
+                        <option value="BRL">BRL (R$)</option>
+                    </select>
+                </div>
+
+                <span class="field-label">Categoría y tienda</span>
+                <div class="row-inputs" style="grid-template-columns: 1fr 1fr;">
+                    <input type="text" id="eCategory" list="categorySuggestions">
+                    <input type="text" id="eShop">
+                </div>
+
+                <span class="field-label">Link (opcional)</span>
+                <input type="url" id="eLink">
+
+                <div class="modal-actions">
+                    <button class="btn-add" onclick="saveEditModal()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         let currentUser = localStorage.getItem('wishlist_current_user');
@@ -359,6 +458,31 @@
         };
         if(!state.updatedAt) state.updatedAt = 0;
 
+        function escapeHtml(str) {
+            if (str === undefined || str === null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // --- Sistema de toasts (feedback no bloqueante) ---
+        function toast(message, type = 'info', duration = 3200) {
+            const container = document.getElementById('toastContainer');
+            if(!container) { console.log(message); return; }
+            const el = document.createElement('div');
+            el.className = `toast toast-${type}`;
+            el.textContent = message;
+            container.appendChild(el);
+            requestAnimationFrame(() => el.classList.add('show'));
+            setTimeout(() => {
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 250);
+            }, duration);
+        }
+
         function getCategoryStyle(categoryName) {
             const label = categoryName.trim().toLowerCase();
             const colors = {
@@ -388,12 +512,57 @@
             return palettes[Math.abs(hash) % palettes.length];
         }
 
+        let pushDebounceTimer = null;
+        let hasUnsyncedChanges = false;
+        let lastKnownCloudUpdatedAt = 0;
+        let lastSyncHadError = false;
+
         /* 📡 LOGICA ATOMICA OFFLINE-FIRST ASINCRO CON VERIFICACIÓN DE MARCA DE TIEMPO v8.2 */
         async function save() {
             state.updatedAt = Date.now(); 
             localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
             render();
-            await autoPushToCloud();
+            hasUnsyncedChanges = true;
+            updateSyncStatus();
+            scheduleCloudPush();
+        }
+
+        function scheduleCloudPush() {
+            clearTimeout(pushDebounceTimer);
+            const userAtSchedule = currentUser;
+            pushDebounceTimer = setTimeout(async () => {
+                if(userAtSchedule !== currentUser) return; // el usuario cambió antes de que dispare el push
+                const result = await autoPushToCloud();
+                if(result.ok) {
+                    hasUnsyncedChanges = false;
+                    lastSyncHadError = false;
+                } else if(result.conflict) {
+                    toast('⚠️ Hay cambios más nuevos en la nube. Tocá 🔄 para traerlos antes de seguir editando.', 'error', 5000);
+                } else if(!result.noCreds) {
+                    lastSyncHadError = true;
+                }
+                updateSyncStatus();
+            }, 1500);
+        }
+
+        function updateSyncStatus() {
+            const dot = document.getElementById('syncDot');
+            if(!dot) return;
+            const creds = getSyncCredentials();
+            dot.classList.remove('dot-synced', 'dot-pending', 'dot-error', 'dot-nocreds');
+            if(!creds.token) {
+                dot.classList.add('dot-nocreds');
+                dot.title = 'Sin credenciales configuradas';
+            } else if(lastSyncHadError) {
+                dot.classList.add('dot-error');
+                dot.title = 'Error en la última sincronización';
+            } else if(hasUnsyncedChanges) {
+                dot.classList.add('dot-pending');
+                dot.title = 'Cambios pendientes de subir';
+            } else {
+                dot.classList.add('dot-synced');
+                dot.title = 'Todo sincronizado';
+            }
         }
 
         async function switchUser(user) {
@@ -407,6 +576,9 @@
                 items: []
             };
             if(!state.updatedAt) state.updatedAt = 0;
+            hasUnsyncedChanges = false;
+            lastSyncHadError = false;
+            lastKnownCloudUpdatedAt = 0;
             
             updateUserSelectorUI();
             render();
@@ -488,6 +660,7 @@
                 render();
             } catch(err) {
                 console.error(err);
+                toast('⚠️ No se pudieron actualizar las tasas de cambio.', 'error');
             } finally {
                 if(btn) btn.classList.remove('spinning');
             }
@@ -590,8 +763,8 @@
             const shop = document.getElementById('shop').value.trim() || 'Tienda';
             const link = document.getElementById('link').value.trim();
 
-            if(!title || isNaN(price)) {
-                alert('Falta completar datos básicos del producto.');
+            if(!title || isNaN(price) || price <= 0) {
+                toast('Falta completar datos básicos del producto (título y precio válido).', 'error');
                 return;
             }
 
@@ -608,6 +781,7 @@
             document.activeElement.blur();
 
             toggleForm();
+            toast('✅ Artículo agregado.', 'success');
         }
 
         async function editCategory(index) {
@@ -618,6 +792,52 @@
                 state.items[index].category = newCat ? newCat.charAt(0).toUpperCase() + newCat.slice(1).toLowerCase() : 'Varios';
                 await save();
             }
+        }
+
+        // --- Modal de edición completa ---
+        let editingItemIndex = null;
+
+        function openEditModal(index) {
+            const item = state.items[index];
+            if(!item) return;
+            editingItemIndex = index;
+            document.getElementById('eTitle').value = item.title;
+            document.getElementById('ePrice').value = item.price;
+            document.getElementById('eCurrency').value = item.currency;
+            document.getElementById('eCategory').value = item.category;
+            document.getElementById('eShop').value = item.shop;
+            document.getElementById('eLink').value = item.link || '';
+            document.getElementById('editModalOverlay').classList.add('open');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModalOverlay').classList.remove('open');
+            editingItemIndex = null;
+        }
+
+        async function saveEditModal() {
+            if(editingItemIndex === null) return;
+            const item = state.items[editingItemIndex];
+            if(!item) return;
+
+            const title = document.getElementById('eTitle').value.trim();
+            const price = parseFloat(document.getElementById('ePrice').value);
+            if(!title || isNaN(price) || price <= 0) {
+                toast('Completá título y precio válido antes de guardar.', 'error');
+                return;
+            }
+
+            item.title = title;
+            item.price = price;
+            item.currency = document.getElementById('eCurrency').value;
+            let categoryRaw = document.getElementById('eCategory').value.trim();
+            item.category = categoryRaw ? categoryRaw.charAt(0).toUpperCase() + categoryRaw.slice(1).toLowerCase() : 'Varios';
+            item.shop = document.getElementById('eShop').value.trim() || 'Tienda';
+            item.link = document.getElementById('eLink').value.trim();
+
+            closeEditModal();
+            await save();
+            toast('✅ Artículo actualizado.', 'success');
         }
 
         function shareWhatsApp(index) {
@@ -669,18 +889,18 @@
             const select = document.getElementById('filterCategory');
             const currentVal = select.value;
             const categories = [...new Set(state.items.map(i => i.category))].sort((a, b) => a.localeCompare(b));
-            select.innerHTML = '<option value="">Todas las categorías</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            select.innerHTML = '<option value="">Todas las categorías</option>' + categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
             if(categories.includes(currentVal)) select.value = currentVal;
             
             const datalist = document.getElementById('categorySuggestions');
-            datalist.innerHTML = categories.map(c => `<option value="${c}"></option>`).join('');
+            datalist.innerHTML = categories.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
         }
 
         function populateShopFilter() {
             const select = document.getElementById('filterShop');
             const currentVal = select.value;
             const shops = [...new Set(state.items.map(i => i.shop))].sort((a, b) => a.localeCompare(b));
-            select.innerHTML = '<option value="">Todas las tiendas</option>' + shops.map(s => `<option value="${s}">${s}</option>`).join('');
+            select.innerHTML = '<option value="">Todas las tiendas</option>' + shops.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
             if(shops.includes(currentVal)) select.value = currentVal;
         }
 
@@ -712,10 +932,27 @@
             return { token, gistId };
         }
 
+        async function forceSetupCredentials() {
+            const current = getSyncCredentials();
+            const token = prompt("Pegá tu GitHub Personal Access Token (con permiso 'gist'):", current.token || '');
+            if (token === null) return;
+            const gistId = prompt("Pegá el ID del Gist a usar para sincronizar:", current.gistId || '');
+            if (gistId === null) return;
+            if (!token.trim() || !gistId.trim()) {
+                toast('Token y Gist ID son obligatorios para sincronizar.', 'error');
+                return;
+            }
+            localStorage.setItem('wishlist_gh_token', token.trim());
+            localStorage.setItem('wishlist_gh_gist', gistId.trim());
+            toast('🔐 Credenciales guardadas. Sincronizando...', 'info');
+            await manualSync();
+        }
+
         /* 📡 LOGICA DE RESOLUCIÓN POR COMPARACIÓN DE TIMESTAMP v8.2 */
+        // Devuelve { ok, adopted, error } — adopted=true si se pisó el estado local con el de la nube
         async function autoPullFromCloud(isForcedManual = false) {
             const creds = getSyncCredentials();
-            if(!creds.token || !creds.gistId) return;
+            if(!creds.token || !creds.gistId) return { ok: false, noCreds: true };
 
             const syncUser = currentUser; 
             const syncBtn = document.getElementById('btnCloudSync');
@@ -727,66 +964,185 @@
                 const res = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
                     headers: { 'Authorization': `token ${creds.token}` }
                 });
-                if(res.ok) {
-                    const gistData = await res.json();
-                    if(gistData.files && gistData.files[fileName]) {
-                        const cloudContent = JSON.parse(gistData.files[fileName].content);
-                        const cloudUpdatedAt = cloudContent.updatedAt || 0;
-                        
-                        if (syncUser !== currentUser) return;
+                if(!res.ok) return { ok: false, error: `HTTP ${res.status}` };
 
-                        if (cloudUpdatedAt > state.updatedAt || isForcedManual) {
-                            state = cloudContent;
-                            localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
-                            render();
-                        } else if (state.updatedAt > cloudUpdatedAt) {
-                            await autoPushToCloud(true);
-                        }
-                    }
+                const gistData = await res.json();
+                if(!gistData.files || !gistData.files[fileName]) return { ok: true, adopted: false };
+
+                const cloudContent = JSON.parse(gistData.files[fileName].content);
+                const cloudUpdatedAt = cloudContent.updatedAt || 0;
+
+                if (syncUser !== currentUser) return { ok: true, adopted: false }; // el usuario cambió mientras esperábamos la respuesta
+
+                lastKnownCloudUpdatedAt = Math.max(lastKnownCloudUpdatedAt, cloudUpdatedAt);
+
+                // Un sync manual NUNCA debe pisar cambios locales más recientes todavía no subidos:
+                // solo se adopta la nube si es realmente más nueva que lo local.
+                if (cloudUpdatedAt > state.updatedAt) {
+                    state = cloudContent;
+                    localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
+                    hasUnsyncedChanges = false;
+                    render();
+                    return { ok: true, adopted: true };
                 }
+                return { ok: true, adopted: false };
             } catch(e) {
                 console.log("Descarga contenida amortiguada.");
+                return { ok: false, error: e.message };
             } finally {
                 if(syncBtn) syncBtn.classList.remove('spinning');
+                updateSyncStatus();
             }
         }
 
-        async function autoPushToCloud(bypassLock = false) {
-            if(isSyncingLock && !bypassLock) return;
+        async function autoPushToCloud(bypassLock = false, skipConflictCheck = false) {
+            if(isSyncingLock && !bypassLock) return { ok: false };
             const creds = getSyncCredentials();
-            if(!creds.token || !creds.gistId) return;
+            if(!creds.token || !creds.gistId) return { ok: false, noCreds: true };
 
             isSyncingLock = true;
             const syncBtn = document.getElementById('btnCloudSync');
             if(syncBtn) syncBtn.classList.add('spinning');
 
             const fileName = `wishlist_${currentUser.toLowerCase()}.json`;
-            const filePayload = {};
-            filePayload[fileName] = { content: JSON.stringify(state, null, 2) };
 
             try {
-                await fetch(`https://api.github.com/gists/${creds.gistId}`, {
+                // Chequeo de conflicto: si alguien (vos desde otro dispositivo, o Bere/Mariano) pusheó
+                // algo que todavía no vimos, no lo pisamos a ciegas.
+                if(!skipConflictCheck) {
+                    try {
+                        const checkRes = await fetch(`https://api.github.com/gists/${creds.gistId}?_cb=${Date.now()}`, {
+                            headers: { 'Authorization': `token ${creds.token}` }
+                        });
+                        if(checkRes.ok) {
+                            const checkData = await checkRes.json();
+                            if(checkData.files && checkData.files[fileName]) {
+                                const cloudNow = JSON.parse(checkData.files[fileName].content);
+                                const cloudNowUpdatedAt = cloudNow.updatedAt || 0;
+                                if(cloudNowUpdatedAt > lastKnownCloudUpdatedAt && cloudNowUpdatedAt !== state.updatedAt) {
+                                    return { ok: false, conflict: true };
+                                }
+                            }
+                        }
+                    } catch(e) { /* si falla el chequeo, intentamos subir igual */ }
+                }
+
+                const filePayload = {};
+                filePayload[fileName] = { content: JSON.stringify(state, null, 2) };
+
+                const res = await fetch(`https://api.github.com/gists/${creds.gistId}`, {
                     method: 'PATCH',
                     headers: { 'Authorization': `token ${creds.token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ files: filePayload })
                 });
+                if(!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+                lastKnownCloudUpdatedAt = state.updatedAt;
+                return { ok: true };
             } catch(e) {
                 console.log("Escritura contenida amortiguada.");
+                return { ok: false, error: e.message };
             } finally {
                 isSyncingLock = false;
                 if(syncBtn) syncBtn.classList.remove('spinning');
+                updateSyncStatus();
             }
         }
 
         async function manualSync() {
             const creds = getSyncCredentials();
             if(!creds.token || !creds.gistId) {
-                forceSetupCredentials();
+                await forceSetupCredentials();
                 return;
             }
-            await autoPullFromCloud(true);
-            await autoPushToCloud(true);
-            alert("🛍️ Wishlist sincronizada con éxito.");
+            clearTimeout(pushDebounceTimer);
+            const pullResult = await autoPullFromCloud(true);
+            if(!pullResult.ok) {
+                lastSyncHadError = true;
+                updateSyncStatus();
+                toast(`❌ No se pudo sincronizar (falló la descarga: ${pullResult.error || 'error de red'}).`, 'error');
+                return;
+            }
+            if(pullResult.adopted) {
+                lastSyncHadError = false;
+                toast('☁️ Se encontró una versión más reciente en la nube y se cargó localmente.', 'info', 4000);
+                return;
+            }
+            const pushResult = await autoPushToCloud(true, true);
+            if(!pushResult.ok) {
+                lastSyncHadError = true;
+                updateSyncStatus();
+                toast(`❌ No se pudo subir tu wishlist a la nube (${pushResult.error || 'error de red'}).`, 'error');
+                return;
+            }
+            hasUnsyncedChanges = false;
+            lastSyncHadError = false;
+            updateSyncStatus();
+            toast('🛍️ Wishlist sincronizada con éxito.', 'success');
+        }
+
+        // --- Uso de almacenamiento local ---
+        function estimateStorageBytes() {
+            let total = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('wishlist_state_')) {
+                    total += new Blob([localStorage.getItem(key) || '']).size;
+                }
+            }
+            return total;
+        }
+
+        function updateStorageBar() {
+            const bytes = estimateStorageBytes();
+            const mb = bytes / (1024 * 1024);
+            const QUOTA_MB = 5; // límite aproximado y conservador de localStorage
+            const pct = Math.min(100, (mb / QUOTA_MB) * 100);
+            const label = document.getElementById('storageBarLabel');
+            const fill = document.getElementById('storageBarFill');
+            if(label) label.textContent = `Uso de almacenamiento local (ambos usuarios): ${mb.toFixed(2)} MB de ~${QUOTA_MB} MB`;
+            if(fill) {
+                fill.style.width = `${pct}%`;
+                fill.classList.remove('warn', 'danger');
+                if(pct >= 90) fill.classList.add('danger');
+                else if(pct >= 65) fill.classList.add('warn');
+            }
+        }
+
+        // --- Backup manual ---
+        function downloadBackup() {
+            const dataStr = JSON.stringify({ user: currentUser, ...state }, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const ts = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `wishlist_${currentUser.toLowerCase()}_backup_${ts}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast(`⬇️ Backup de ${currentUser} descargado.`, 'success');
+        }
+
+        async function importBackup(file) {
+            if(!file) return;
+            if(!confirm(`Esto va a REEMPLAZAR toda la wishlist local de ${currentUser} por el contenido del backup. ¿Continuar?`)) {
+                document.getElementById('fImportBackup').value = '';
+                return;
+            }
+            try {
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+                if(!parsed || !Array.isArray(parsed.items)) throw new Error('Formato inválido');
+                state = { updatedAt: Date.now(), rates: parsed.rates || state.rates, ratesUpdatedAt: parsed.ratesUpdatedAt || state.ratesUpdatedAt, items: parsed.items };
+                localStorage.setItem(`wishlist_state_${currentUser}`, JSON.stringify(state));
+                render();
+                toast('✅ Backup restaurado localmente. Tocá 🔄 para subirlo a la nube.', 'success', 4500);
+            } catch(e) {
+                toast('❌ El archivo no es un backup válido de Wishlist Maker.', 'error');
+            } finally {
+                document.getElementById('fImportBackup').value = '';
+            }
         }
 
         function render() {
@@ -794,6 +1150,8 @@
             populateCategoryFilter();
             populateShopFilter();
             updateUserSelectorUI();
+            updateStorageBar();
+            updateSyncStatus();
 
             const statusFilter = document.getElementById('filterStatus').value;
             const categoryFilter = document.getElementById('filterCategory').value;
@@ -840,7 +1198,7 @@
                 summaryEl.innerHTML = `
                     <div class="summary-row">
                         <span class="count">
-                            ${isAnyFilterActive ? 'Filtrado (' + (categoryFilter || shopFilter || 'Búsqueda') + ')' : 'Wishlist'} (${pendingCount} p.)
+                            ${isAnyFilterActive ? 'Filtrado (' + escapeHtml(categoryFilter || shopFilter || 'Búsqueda') + ')' : 'Wishlist'} (${pendingCount} p.)
                         </span>
                         <span class="total pending">U$S ${totalPendingUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
@@ -886,22 +1244,26 @@
                             <button class="btn-check-ios" onclick="toggleBought(${index})" aria-label="Marcar como comprado">
                                 <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="white"><path d="M5 10l3 3 7-7"/></svg>
                             </button>
-                            <div class="card-title">${item.title}</div>
+                            <div class="card-title">${escapeHtml(item.title)}</div>
                         </div>
                         <button class="category-badge" onclick="editCategory(${index})" style="background:${styleObj.bg}; color:${styleObj.text};">
-                            <span class="dot" style="background:${styleObj.dot};"></span>${item.category}
+                            <span class="dot" style="background:${styleObj.dot};"></span>${escapeHtml(item.category)}
                         </button>
                     </div>
 
                     <div class="price-hero">
                         <span><span class="origin-val">${originalPriceFormatted}</span><span class="origin-cur">${item.currency}</span></span>
-                        <span class="shop-info">📍 ${item.shop}</span>
+                        <span class="shop-info">📍 ${escapeHtml(item.shop)}</span>
                     </div>
 
                     <div class="other-currencies">${chips}</div>
 
                     <div class="actions">
-                        ${item.link ? `<a href="${item.link}" target="_blank" class="btn-view"><svg class="icon" viewBox="0 0 20 20"><path d="M8 5H5v10h10v-3M12 4h4v4M15.5 4.5L9 11"/></svg>Ver Link</a>` : ''}
+                        ${item.link ? `<a href="${encodeURI(item.link)}" target="_blank" class="btn-view"><svg class="icon" viewBox="0 0 20 20"><path d="M8 5H5v10h10v-3M12 4h4v4M15.5 4.5L9 11"/></svg>Ver Link</a>` : ''}
+
+                        <button class="btn-edit-item" onclick="openEditModal(${index})" title="Editar artículo">
+                            <svg class="icon" viewBox="0 0 20 20"><path d="M14 3l3 3-9 9H5v-3l9-9z"/></svg>
+                        </button>
                         
                         <button class="btn-whatsapp" onclick="shareWhatsApp(${index})" title="Compartir por WhatsApp">
                             <svg viewBox="0 0 24 24">
